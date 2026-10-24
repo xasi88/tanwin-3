@@ -30,6 +30,7 @@
   --c-emerald: #10b981; --c-teal: #0d9488; --c-sky: #0284c7; --c-indigo: #4f46e5; --c-violet: #7c3aed; --c-fuchsia: #c026d3;
   --c-rose: #e11d48; --c-orange: #ea580c; --c-amber: #d97706; --c-lime: #65a30d; --c-green: #16a34a; --c-red: #dc2626;
   --c-cyan: #0891b2; --c-slate: #475569; --c-gold: #c68a1c;
+  --c-sky-deep: #1e3a8a; --c-rose-deep: #7f1d1d; /* буквы транскрипции на цветном листе (розовом, лаймовом, жёлтом): на нём обычные бледны */
   /* цвета таджвида */
   --r-w: #8a8799; --r-l: #8a8799; --r-s: #8a8799;
   --r-n: #b8730a; --r-p: #e46c0a; --r-o: #d21f3c; --r-u: #e0445f; --r-x: #8a0f2a;
@@ -1438,10 +1439,10 @@ body:has(.sura-scrub) .fb-tab { right: auto; left: 0; padding: 0 2px 0 0; border
    Описание: docs/Брендбук TanWin.md, разделы 1-14. */
 
 /* ---------- Текст прямо на фоне в точку ---------- */
-.page-head h1, .home-head h1, .page > h1, .page > h2, .page > section > h2, .mq-h, .rules-group h2, .sec-h {
+.page-head h1, .home-head h1, .page > h1, .page > h2, .page > section > h2, .mq-h, .rules-group > h2, .sec-h, .donors > .card-title h3 {
   color: var(--on-bg); text-shadow: 3px 3px 0 var(--edge);
 }
-.page-head p, .page-head .muted, .page > p, .page > .muted, .mq-sub, .home-fb, .home-foot, .sec-sub { color: var(--on-bg-2); font-weight: 600; }
+.page-head p, .page-head .muted, .page > p, .page > .muted, .mq-sub, .home-fb, .home-foot, .sec-sub, .donors > .card-title .muted { color: var(--on-bg-2); font-weight: 600; }
 .page-head .back, .page > p a, .page-head a, .home-foot a, .home-fb .link { color: var(--on-bg); }
 .page-head .back { min-height: 44px; }
 .page > .label, .sec-label { color: var(--on-bg); opacity: 1; }
@@ -1513,6 +1514,8 @@ body:has(.sura-scrub) .fb-tab { right: auto; left: 0; padding: 0 2px 0 0; border
 #toast { bottom: calc(var(--nav-h) + 26px + env(safe-area-inset-bottom)); background: var(--yellow); color: var(--ink); border: 3px solid var(--edge); box-shadow: var(--shadow); font: 800 .98rem/1.35 var(--body); }
 #toast .link { color: var(--accent-2); }
 body.fullscreen #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
+/* в уроке, «Практике» и знакомстве сообщение стоит сверху, под полосой прогресса: внизу оно закрывало фразу фильма и кнопку «Дальше» (разбор 2026-10-24) */
+body.study #toast { top: calc(env(safe-area-inset-top) + 74px); bottom: auto; }
 .tour-hole { border-radius: 24px; outline: 4px solid var(--yellow); box-shadow: 0 0 0 200vmax rgba(19, 10, 48, .68); }
 .tour-bubble { border: 3px solid var(--edge); box-shadow: var(--shadow-lg); background: var(--card); color: var(--ink); }
 .tour-count { font-family: var(--display); }
@@ -1611,8 +1614,8 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .mq-marks > summary .rc-ic { background: var(--edge); color: var(--yellow); }
 .mq-marks > summary .muted { color: var(--ink); font-weight: 600; }
 .mq-marks-body { background: var(--card); border-top: 3px solid var(--edge); border-radius: 0 0 19px 19px; padding-top: 14px; }
-.mq-back { color: var(--on-bg); }
-.mq-back:hover { background: rgba(255, 248, 242, .15); color: var(--on-bg); }
+.btn.mq-back { color: var(--on-bg); } /* «.btn.ghost» красил её тёмным на фоне */
+.btn.mq-back:hover { background: rgba(255, 248, 242, .15); color: var(--on-bg); }
 .ss-thumb { border: 2.5px solid var(--edge); background: var(--yellow); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); }
 .sura-scrub.drag .ss-thumb { background: var(--lime); color: var(--ink); }
 .ss-tip { border: 3px solid var(--edge); background: var(--card); box-shadow: var(--shadow); }
@@ -1743,7 +1746,7 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .alpha-cell:active { translate: 3px 3px; box-shadow: 0 0 0 var(--edge); }
 .alpha-cell > span:not(.ar) { font-family: var(--display); font-weight: 800; font-size: .8rem; }
 .map-info { border: 2.5px solid var(--edge); background: var(--card-2); }
-.rules-group h2 { color: var(--on-bg); }
+.rules-group > h2 { color: var(--on-bg); } /* только заголовок группы на фоне: заголовок правила внутри карточки остаётся чернилами */
 .fam-dot { width: 18px; height: 18px; border: 2.5px solid var(--edge); }
 .rule-card { border-top: 3px solid var(--edge); }
 .rule-card .rc-head { padding-bottom: 6px; border-bottom: 5px solid var(--rc); }
@@ -1760,8 +1763,8 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .th-special { background: var(--card); border-color: var(--edge); }
 .th-special .rc-ic { background: var(--lime); color: var(--ink); }
 .th-special .th-sp-dua { border-top: 2.5px dashed var(--line-2); }
-.th-dua { color: var(--on-bg-2); }
-.th-dua .ic { color: var(--yellow); }
+.th-dua { color: var(--ink-2); } /* дуа на светлой карточке: чернилами */
+.th-dua .ic { color: var(--gold); }
 .author-letter { font-size: 1.04rem; }
 .al-sign b { font-family: var(--display); }
 .version { border: 3px solid var(--edge); background: var(--card); box-shadow: var(--shadow); }

@@ -132,6 +132,7 @@ const routes = [
   [/^\/welcome$/, () => import("./views/onboard.js").then((m) => m.Onboarding()), "Знакомство"],
 ];
 const FULLSCREEN = /^\/(learn|surah|practice|welcome|read|juz|page|mark)/;
+const STUDY = /^\/(learn|surah|practice|welcome)/;
 
 let routing = 0;
 async function route() {
@@ -150,6 +151,7 @@ async function route() {
   const full = FULLSCREEN.test(path);
   applySettings(); // цвет строки браузера: обычный экран или спокойная страница чтения
   document.body.classList.toggle("fullscreen", full);
+  document.body.classList.toggle("study", STUDY.test(path)); // урок, «Практика», знакомство: сообщения сверху (css)
   if (!full) applyUpdate(); // обновление, отложенное на время урока или чтения, включается сразу после него
   renderNav(path);
   for (const [re, fn, title] of routes) {
@@ -211,8 +213,14 @@ async function start() {
   initFullscreen();
   initWake();
   initFeedback();
-  // запись не загрузилась, одна подсказка на всё приложение: уроки, карточки слов, чтец
-  onFail(() => toast("Звук не загружается. Проверьте интернет. Не помогло? Включите или выключите VPN.", 6000));
+  // запись не загрузилась, одна подсказка на всё приложение: уроки, карточки слов, чтец.
+  // В уроке она одна на урок: при плохой связи она всплывала на каждом звуке и закрывала кнопки (разбор 2026-10-24)
+  let failIn = "";
+  addEventListener("hashchange", () => { failIn = ""; });
+  onFail(() => {
+    if (document.body.classList.contains("study")) { if (failIn === location.hash) return; failIn = location.hash; }
+    toast("Звук не загружается. Проверьте интернет. Не помогло? Включите или выключите VPN.", 6000);
+  });
   startMetrika();
   // на странице уже стоит заставка с описанием сайта (index.html): оставляем её до первого экрана
   if (!view.querySelector(".boot")) view.replaceChildren(h("div.boot", null, logo(72), h("div.spinner")));
@@ -283,7 +291,11 @@ const emitUpd = () => updListeners.forEach((f) => f());
 export function updateState() {
   if (swReg?.waiting && navigator.serviceWorker.controller) return "ready";
   let ok = 0;
-  try { ok = +localStorage.getItem(UPD_OK) || 0; } catch {}
+  try {
+    ok = +localStorage.getItem(UPD_OK) || 0;
+    // удачной проверки ещё не было (первый запуск без связи): отсчёт трёх дней идёт с этого запуска, а не с 1970 года
+    if (!ok) localStorage.setItem(UPD_OK, String(ok = Date.now()));
+  } catch {}
   return updFailed && Date.now() - ok > STALE ? "stale" : null;
 }
 export const applyNow = () => swReg?.waiting?.postMessage({ type: "SKIP_WAITING" });

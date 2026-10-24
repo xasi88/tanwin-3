@@ -296,8 +296,13 @@
 .lesson.kino .after-first { rotate: -1deg; }
 .lesson.kino .after-first .ar { color: var(--k-ink); }
 
-/* ---------- 3.0: внутри наклеек прежние детали (плитки, примеры, аят) рисуются чернилами на светлом при любой теме ---------- */
-.kino .card, .kino .k-st, .kino .lp-sheet {
+/* ---------- 3.0: внутри наклеек прежние детали (плитки, примеры, аят) рисуются чернилами на светлом при любой теме ----------
+   Текст урока по умолчанию светлый (он стоит на фиолетовом фоне). Плитки и кнопки упражнений из 2.0 свой цвет текста не задают,
+   поэтому они перечислены здесь: иначе арабский в них белый на белом (разбор перед выпуском 2026-10-24). */
+.kino .card, .kino .k-st, .kino .lp-sheet,
+.kino :is(.verse-tap, .vt-word, .sn-btn, .match-btn, .verses, .verse-block, .word-chip, .st-cell, .stop-cell, .case, .form-cell, .syll, .card-big,
+  .cmp-tile, .rw-cell, .q-big, .q-tr, .q-word, .rd-word, .rd-tr, .rd-stop, .showcase, .stat, .res-goal, .tutor-note, .tutor-weak, .snd-tile,
+  .wave, .si-plan, .tile, .lc-tip, .diagram-wrap, .surah-listen > .bismillah) {
   --ink: var(--k-ink); --ink-2: var(--k-ink-2); --ink-3: #6e5f9e;
   --card: #ffffff; --card-2: #fffdf9; --card-3: #f1ebff; --line: #d9cfee; --line-2: #c4b6e6;
   --accent: #5b2fe0; --accent-2: #4a22c4; --accent-soft: #ece4ff; --accent-ink: #fff;
@@ -406,3 +411,25 @@
 /* ответы в вариантах и в панели «Верно:» набраны шрифтом текста: длинные слова («останавливаться») помещаются и переносятся */
 .lesson.kino .opt .opt-v { font-family: var(--k-body); font-weight: 800; overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
 .lesson.kino .sheet-right { font-family: var(--k-body); overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; min-width: 0; }
+
+/* ---------- 3.0: арабский и подписи прямо на фоне урока (разбор перед выпуском 2026-10-24) ---------- */
+/* слово вопроса стоит на светлой наклейке с контуром, как большая буква (просьба автора): чёрное на фиолетовом читалось плохо */
+/* max-width снят нарочно: слишком широкая наклейка видна подгонке размера (fitArabic в ui.js), и та уменьшает слово */
+.lesson.kino .q-word { display: inline-block; max-width: none; padding: 0 22px .1em; border: var(--k-line); border-radius: 24px; background: var(--k-paper); box-shadow: var(--k-shadow-sm); }
+.lesson.kino :is(.rd-word, .lp-sheet, .card) .q-word { display: inline; max-width: 100%; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+/* буква или слово внутри вопроса: маленькая светлая плашка в строке */
+.lesson.kino .q-text .ar.inline { display: inline-block; line-height: 1.75; padding: 0 .3em; border: 2px solid var(--k-ink); border-radius: 10px; background: var(--k-paper); color: var(--k-ink); text-shadow: none; vertical-align: middle; }
+/* мелкий текст прямо на фоне: светлый */
+.lesson.kino :where(.verse-ref, .rd-count, .read-drill > .muted, .read-along > .muted, .surah-listen > .muted, .speak > .muted, .speak > .row > .muted),
+.lesson.kino .blend-board .bb-undo { color: rgba(255, 248, 242, .92); }
+.lesson.kino .lp-sheet .verse-ref { color: var(--k-ink-2); }
+/* «Бисмиллях» над сурой в уроке суры: тоже на светлой наклейке */
+.lesson.kino .surah-listen > .bismillah { justify-self: center; max-width: 100%; margin: 0; padding: 0 22px; border: var(--k-line); border-radius: 20px; background: var(--k-paper); box-shadow: var(--k-shadow-sm); }
+/* «Беглое чтение»: чтение слова и заметка об остановке стоят на наклейках под словом */
+.lesson.kino .rd-tr { justify-self: center; max-width: 100%; padding: 2px 20px; border: var(--k-line); border-radius: 18px; background: var(--k-paper); box-shadow: var(--k-shadow-sm); }
+.lesson.kino .rd-stop { padding: 8px 14px; border: 2.5px solid var(--k-ink); border-radius: 14px; background: var(--k-paper); box-shadow: 3px 3px 0 var(--k-ink); }
+/* буквы транскрипции на цветном листе (розовый «Не совсем», лаймовый «Верно», жёлтая плитка) темнее: вариант А, выбор автора 2026-10-24 */
+.kino :is(.opt.wrong, .opt.right, .lp-sheet.bad, .lp-sheet.ok, .snd-tile.whole) .tr-throat { color: var(--c-sky-deep); }
+.kino :is(.opt.wrong, .opt.right, .lp-sheet.bad, .lp-sheet.ok, .snd-tile.whole) .tr-heavy { color: var(--c-rose-deep); }
+/* «Пропустить» на розовом такте фильма: чернилами (светлое на розовом читалось плохо) */
+.kino[data-tone="pink"] .skip-btn { color: var(--k-ink); }
