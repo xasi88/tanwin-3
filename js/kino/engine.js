@@ -127,10 +127,19 @@ export function film({ shots, onDone, doneLabel = "Дальше", cls = "" }) {
     if (!c || !stage.clientHeight) return;
     c.style.scale = "";
     if (layer.classList.contains("scroll")) { layer.classList.toggle("tall", c.offsetHeight + 24 > stage.clientHeight - 36); return; } // длинная наглядная часть (таблица слогов, аят) прокручивается, а не мельчит
-    const k = Math.min(1.3, (stage.clientWidth - 12) / (c.offsetWidth + 8), (stage.clientHeight - 36) / (c.offsetHeight + 24));
-    if (Math.abs(k - 1) > 0.01) c.style.scale = Math.max(0.5, k).toFixed(3);
+    // ширина и высота с тем, что вылезло за рамки (крупный текст на узком экране): тогда сцена уменьшается целиком
+    const w = Math.max(c.offsetWidth, c.scrollWidth), hgt = Math.max(c.offsetHeight, c.scrollHeight);
+    const kw = (stage.clientWidth - 12) / (w + 8), kh = (stage.clientHeight - 36) / (hgt + 24);
+    let k = Math.min(1.3, kw, kh);
+    // низкая сцена (крупный текст на маленьком экране): картинка не мельчит, а прокручивается пальцем в своём месте
+    const squeeze = kh < 0.6 && kh < kw;
+    layer.classList.toggle("squeezed", squeeze);
+    if (squeeze) k = Math.min(1.3, kw, 0.6);
+    if (Math.abs(k - 1) > 0.01) c.style.scale = Math.max(0.4, k).toFixed(3);
   }
-  new ResizeObserver(fit).observe(stage);
+  // сцена вписывается заново, когда меняется размер экрана или самой картинки (наклейка выросла на следующем такте)
+  const ro = new ResizeObserver(() => fit());
+  ro.observe(stage);
   function buildShot(si, animated) {
     const s = shots[si];
     const old = layer;
@@ -140,6 +149,8 @@ export function film({ shots, onDone, doneLabel = "Дальше", cls = "" }) {
     else stage.replaceChildren(layer);
     cur = si;
     tone(s.tone);
+    if (old?.firstElementChild) ro.unobserve(old.firstElementChild);
+    if (layer.firstElementChild) ro.observe(layer.firstElementChild);
     fit();
   }
   function run(i, instant) {

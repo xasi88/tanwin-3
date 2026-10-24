@@ -97,7 +97,7 @@ export async function MyQuran() {
   };
   draw();
   return h("div.page.quran-page.my-quran", null,
-    h("header.page-head", null, h("h1", null, "Мой Коран"), h("p.muted", null, "Мусхаф Мадины, риваят Хафса от Асыма. Выберите суру или джуз: текст откроется на весь экран.")),
+    h("header.page-head", null, h("h1", null, "Мой Коран"), h("p.muted", null, "Мусхаф Мадины, риваят Хафса от Асыма. Нажмите на суру или джуз, и текст откроется на весь экран.")),
     body);
 }
 

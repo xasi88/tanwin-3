@@ -88,8 +88,9 @@ const FIT_EL = ".ar:not(.inline):not(.verses .ar):not(.uh-ar .ar)";
 const FIT_STOP = ".card, .modal, .lp-content, .sheet-in, .page, #view";
 const px = (v) => parseFloat(v) || 0;
 export function fitArabic(root = document.body) {
-  // в фильмах кино-режима (ветка kino) размеры заданы сценой, а наклейки повёрнуты и двигаются: их не трогаем
-  const els = [...root.querySelectorAll(FIT_EL)].filter((el) => !el.closest(".kf"));
+  // в фильмах кино-режима размеры заданы сценой, а наклейки повёрнуты и двигаются: их не трогаем
+  // 3.0: неподвижная часть фильма (карточка с примерами .kc-show) подгоняется как обычная карточка
+  const els = [...root.querySelectorAll(FIT_EL)].filter((el) => !el.closest(".kf") || el.closest(".kc-show"));
   for (const el of els) el.style.removeProperty("--fit");
   const fit = new Map();
   for (let pass = 0; pass < 4; pass++) {

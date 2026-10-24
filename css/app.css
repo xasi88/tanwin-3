@@ -1892,3 +1892,12 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .fm-tiles { grid-template-columns: repeat(auto-fill, minmax(3.9rem, 1fr)); }
 .fm-tile span { overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; }
 .badge-cell b { font-family: var(--body); font-size: .92rem; overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+/* итог урока: три плитки в ряд, а при крупном тексте на узком экране: две и одна */
+.res-stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 5.4rem), 1fr)); }
+.stat b, .stat small { overflow-wrap: anywhere; }
+/* итог урока: «Ещё раз» и «Продолжить» при крупном тексте встают одна под другой */
+.lp-actions { flex-wrap: wrap; }
+.lp-actions .btn { flex: 1 1 10rem; }
+/* плитки сравнения на узком экране с крупным текстом: подписи переносятся, а не наезжают на соседнюю плитку */
+.cmp-unit, .cmp-when { overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+.cmp-unit { font-size: min(.85rem, 3.8vw); }

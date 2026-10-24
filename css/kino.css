@@ -346,7 +346,7 @@
 .kino .k-glyph { display: block; width: 100%; height: auto; overflow: visible; }
 .kino .kg-text { font-family: "Amiri Quran", serif; font-size: 150px; fill: var(--k-ink); fill-opacity: 1; stroke: var(--k-ink); stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 900; stroke-dashoffset: 0; }
 .kino .k-arname { position: absolute; bottom: -14px; right: -14px; padding: 0 12px; border-radius: 16px; }
-.kino .k-arname .ar { --s: 1.7rem; line-height: 1.6; color: var(--k-ink); }
+.kino .k-arname .ar { --s: 1.7rem; line-height: 1.9; color: var(--k-ink); } /* касра под буквой (أَلِف) не задевает край плашки */
 .kino .k-letter-card ~ .k-hint { bottom: -14px; left: -14px; }
 .kl-row { display: grid; justify-items: center; gap: 14px; width: min(100%, 420px); }
 .kino .k-dots { font-size: .95rem; }
@@ -377,3 +377,32 @@
 .kino .st-opt { display: grid; justify-items: center; gap: 8px; width: 150px; padding: 18px 12px; text-align: center; }
 .kino .st-opt b { font: 800 1rem/1.2 var(--k-display); }
 .onboard.ob-kino { overflow-x: clip; } /* полоса под кнопкой «Дальше» шире экрана на 2 точки: страница не сдвигается вбок */
+/* 3.0: в фильме размер букв задаёт сцена: настройка «Aa» для арабского здесь не действует, иначе знак вылезает из наклейки.
+   Крупный текст приложения растит всю сцену, а fit() в engine.js вписывает её в экран */
+.kf { --ar-k: 1; }
+/* узкий экран с самым крупным текстом: «Пропустить» в такте «Ваш ход» помещается, формы буквы не раздвигают сцену */
+.kf-skip { font-size: clamp(13px, 4.4vw, 1rem); overflow-wrap: anywhere; }
+.kino .k-forms > * { min-width: 0; }
+.kino .k-form .k-cap { overflow-wrap: anywhere; }
+/* формы буквы: на узкой сцене (узкий экран или крупный текст) две в ряд, а не четыре */
+.kf-shot { container-type: inline-size; }
+@container (max-width: 19em) { .kino .k-forms { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(100%, 15em); gap: 12px; } }
+/* длинная плашка на узкой сцене переносится, а не раздвигает кадр вбок (крупный текст на 320 точках) */
+.kino .k-badge { white-space: normal; max-width: 100%; text-align: center; overflow-wrap: anywhere; }
+/* самый крупный текст на узком телефоне: субтитр и «Дальше» не больше, чем позволяет ширина экрана */
+.kf-say { font-size: min(clamp(1.1rem, 1rem + .7vw, 1.4rem), 5.6vw); }
+.kf-next { font-size: min(clamp(1rem, .9rem + .5vw, 1.2rem), 5vw); }
+.kino .k-arname { padding: 2px 12px 4px; }
+/* огласовки над и под буквой не выходят за край наклейки: запас сверху и снизу растёт вместе с буквой (важно при крупном тексте) */
+.kino .k-st .ar:not(.inline), .kino .snd-tile .ar { display: inline-block; padding-block: .12em; }
+/* низкая сцена: картинка в обычном масштабе прокручивается внутри сцены, а не уходит под субтитр */
+.kf-shot.squeezed { align-items: start; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.kf-shot.squeezed > * { transform-origin: top center; }
+/* картинка выше или шире сцены стоит строго по центру (unsafe center), и уменьшение от середины держит её внутри сцены.
+   Обычное центрирование при переполнении прижимало её к краю, и низ уходил под субтитр */
+.kf-shot:not(.squeezed):not(.tall) { grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: unsafe center; }
+/* имя буквы арабским: в левом верхнем углу карточки. Внизу слева подпись звука, на узком экране с крупным текстом они наезжали друг на друга */
+.kino .k-letter-card ~ .k-arname { top: -16px; left: -14px; bottom: auto; right: auto; }
+/* ответы в вариантах и в панели «Верно:» набраны шрифтом текста: длинные слова («останавливаться») помещаются и переносятся */
+.lesson.kino .opt .opt-v { font-family: var(--k-body); font-weight: 800; overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+.lesson.kino .sheet-right { font-family: var(--k-body); overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; min-width: 0; }
