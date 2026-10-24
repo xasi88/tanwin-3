@@ -4,6 +4,7 @@ import { ZWJ, isMarkCh, glue, loneYa } from "./arabic.js";
 import { playWord, playingId, onPlay, stop } from "./audio.js";
 import { store } from "./store.js";
 import { you } from "./speech.js";
+import { preferred, seen } from "./prefer.js";
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -424,5 +425,6 @@ export function ring(pct, { size = 64, stroke = 7, cls = "", label = null } = {}
 
 export const plural = (n, a, b, c) => { const m = n % 100, k = n % 10; return m > 10 && m < 20 ? c : k === 1 ? a : k > 1 && k < 5 ? b : c; };
 export const shuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-export const pick = (a) => a[Math.floor(Math.random() * a.length)];
-export const sample = (a, n) => shuffle(a).slice(0, n);
+// урок берёт примеры со скачанным звуком, если их хватает (js/prefer.js); seen: для инструмента звука этапов
+export const pick = (a) => { const s = preferred(a); return seen(s[Math.floor(Math.random() * s.length)]); };
+export const sample = (a, n) => seen(shuffle(preferred(a, n)).slice(0, n));

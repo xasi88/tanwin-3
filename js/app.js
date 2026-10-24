@@ -242,6 +242,7 @@ async function start() {
   document.fonts?.ready.then(queueFit);
   route();
   registerSW();
+  import("./sound.js").then((m) => m.initSound()).catch(() => {}); // звук без интернета: что скачано, докачка этапа
   // когда есть что беречь: просим браузер не удалять данные приложения
   if (Object.keys(store.get().lessons).length) protectStorage();
   setTimeout(() => onStorageFail(storageWarning), 1500); // после первого экрана, чтобы окно не мигнуло под ним
@@ -272,6 +273,29 @@ function startMetrika() {
 export let swReg = null;
 const CHECK_EVERY = 30 * 60 * 1000; // при возврате в приложение спрашиваем о новой версии не чаще раза в 30 минут
 let lastCheck = 0;
+// Плашка на «Пути» (3.0, 2026-10-24): новая версия ждёт, или проверить обновление не удаётся дольше трёх дней (плохой VPN)
+const UPD_OK = "tanwin.updOk", STALE = 3 * 864e5;
+let updFailed = false;
+const updListeners = new Set();
+export const onUpdateState = (f) => { updListeners.add(f); return () => updListeners.delete(f); };
+const emitUpd = () => updListeners.forEach((f) => f());
+/** «ready»: новая версия скачана и ждёт; «stale»: обновление давно не удаётся проверить; null: всё в порядке. */
+export function updateState() {
+  if (swReg?.waiting && navigator.serviceWorker.controller) return "ready";
+  let ok = 0;
+  try { ok = +localStorage.getItem(UPD_OK) || 0; } catch {}
+  return updFailed && Date.now() - ok > STALE ? "stale" : null;
+}
+export const applyNow = () => swReg?.waiting?.postMessage({ type: "SKIP_WAITING" });
+/** Спросить сервер о новой версии и запомнить, получилось ли. */
+async function tryUpdate() {
+  try {
+    await swReg.update();
+    updFailed = false;
+    try { localStorage.setItem(UPD_OK, String(Date.now())); } catch {}
+  } catch { updFailed = true; }
+  emitUpd();
+}
 const inLesson = () => document.body.classList.contains("fullscreen");
 
 /** Новая версия уже скачана и ждёт (например, пришла во время урока): включаем её, если человек сейчас не на уроке и не в чтении. */
@@ -284,19 +308,25 @@ function registerSW() {
   if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
   navigator.serviceWorker.register(new URL("sw.js", ROOT)).then((reg) => {
     swReg = reg;
-    lastCheck = Date.now(); // при запуске браузер сам проверяет новую версию
+    lastCheck = Date.now(); // при запуске браузер сам проверяет новую версию; мы проверяем ещё раз, чтобы знать, дошла ли проверка
     applyUpdate();
+    setTimeout(tryUpdate, 4000);
     reg.addEventListener("updatefound", () => {
       const nw = reg.installing;
       nw?.addEventListener("statechange", () => {
         if (nw.state === "installed" && navigator.serviceWorker.controller) {
           // вне урока обновляемся сразу; во время урока по кнопке или само после урока (см. route), чтобы не прервать занятие
           if (!inLesson()) { nw.postMessage({ type: "SKIP_WAITING" }); return; }
+          emitUpd();
           toast(h("span", null, "Доступно обновление. ", h("button.link", { type: "button", onclick: () => { nw.postMessage({ type: "SKIP_WAITING" }); } }, "Обновить")), 8000);
         }
       });
     });
-  }).catch(() => {});
+  }).catch(async () => {
+    // сервер не ответил (плохой VPN): работает уже установленная версия, а проверка обновления не удалась
+    swReg = await navigator.serviceWorker.getRegistration().catch(() => null) || null;
+    if (swReg) { updFailed = true; emitUpd(); }
+  });
   // перезагрузка нужна только при обновлении. При самом первом заходе service worker тоже «берёт управление»,
   // но версия та же: перезагружать страницу посреди знакомства или урока незачем
   const updating = !!navigator.serviceWorker.controller;
@@ -311,7 +341,7 @@ function registerSW() {
     applyUpdate();
     if (Date.now() - lastCheck < CHECK_EVERY) return;
     lastCheck = Date.now();
-    swReg.update().catch(() => {});
+    tryUpdate();
   });
 }
 
@@ -321,11 +351,14 @@ export async function checkUpdate() {
   toast("Проверяю обновление…", 20000);
   try {
     await swReg.update();
+    updFailed = false;
+    try { localStorage.setItem(UPD_OK, String(Date.now())); } catch {}
+    emitUpd();
     if (swReg.installing || swReg.waiting) {
       toast("Есть обновление, загружаю. Приложение перезапустится само.", 20000);
       swReg.waiting?.postMessage({ type: "SKIP_WAITING" });
     } else toast(`У вас последняя версия: ${APP_VERSION} ✓`, 4000);
-  } catch { toast("Не получилось проверить обновление. Включите или выключите VPN и попробуйте ещё раз.", 7000); }
+  } catch { updFailed = true; emitUpd(); toast("Не получилось проверить обновление. Включите или выключите VPN и попробуйте ещё раз.", 7000); }
 }
 
 /**

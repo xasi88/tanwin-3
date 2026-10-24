@@ -6,7 +6,8 @@ import { saveProgressFile } from "./more.js";
 import { lessonUnlocked, surahUnlocked, surahsOpen, unitProgress, nextTarget, courseProgress, allOpen, lastOpen, setLastOpen } from "../path.js";
 import { surahMeta } from "../data.js";
 import { playLesson } from "../lesson.js";
-import { go, celebrate, installApp } from "../app.js";
+import { go, celebrate, installApp, updateState, onUpdateState, applyNow, checkUpdate } from "../app.js";
+import { soundRow } from "../sound.js";
 import { isInstalled } from "../install.js";
 import { feedbackButton } from "../feedback.js";
 import { homeLine, studentName } from "../tutor.js";
@@ -211,7 +212,7 @@ function unitBlock(u, target) {
     h("span.uh-chev", { "aria-hidden": "true" }, icon("down2", { size: 22, sw: 2.8 })),
     current ? h("span.uh-here", { "aria-hidden": "true" }, "Вы здесь") : null,
     toggle);
-  const sec = h("section.unit", { id: `unit-${u.id}`, class: current ? "current" : "" }, head, nodes);
+  const sec = h("section.unit", { id: `unit-${u.id}`, class: current ? "current" : "" }, head, soundRow(u.id), nodes);
   const set = (open) => { sec.classList.toggle("open", open); toggle.setAttribute("aria-expanded", open ? "true" : "false"); };
   sec.setOpen = set;
   set(pickedUnit !== undefined ? pickedUnit === u.id : (unitOfLast() || (current ? u : null)) === u);
@@ -226,6 +227,20 @@ function unitBlock(u, target) {
   return sec;
 }
 
+// Плашка обновления (3.0): новая версия ждёт, или проверить обновление не удаётся дольше трёх дней (плохой VPN)
+function updPlaque() {
+  const box = h("div.upd-slot");
+  const draw = () => {
+    const st = updateState();
+    box.replaceChildren(!st ? "" : st === "ready"
+      ? h("div.upd-plaque.ready", null, icon("sparkle", { size: 22 }), h("div", null, h("b", null, "Есть новая версия"), h("small", null, "Обновление займёт пару секунд")), h("button.btn.primary", { type: "button", onclick: applyNow }, "Обновить"))
+      : h("div.upd-plaque.stale", null, icon("info", { size: 22 }), h("div", null, h("b", null, "Давно не получалось проверить обновление"), h("small", null, "Проверьте интернет. Не помогло? Включите или выключите VPN")), h("button.btn.secondary", { type: "button", onclick: checkUpdate }, "Проверить")));
+  };
+  const off = onUpdateState(() => (box.isConnected ? draw() : off()));
+  draw();
+  return box;
+}
+
 export function HomeView() {
   const target = nextTarget();
   const page = h("div.page.home", null,
@@ -236,6 +251,7 @@ export function HomeView() {
           h("div.hh-row", null, h("h1", null, greeting()), h("a.hh-gear", { href: "#/settings", "aria-label": "Настройки" }, icon("gear", { size: 24 }))),
           h("p.home-line", null, homeLine()),
           statsBar()),
+        updPlaque(),
         continueCard(),
         reviewCard(),
         newsCard(),

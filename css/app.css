@@ -1930,3 +1930,28 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 /* плитки сравнения на узком экране с крупным текстом: подписи переносятся, а не наезжают на соседнюю плитку */
 .cmp-unit, .cmp-when { overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
 .cmp-unit { font-size: min(.85rem, 3.8vw); }
+
+/* ---------- 3.0: звук без интернета (строка под заголовком открытого этапа на «Пути») и плашка обновления ---------- */
+.snd-row { display: none; align-items: center; gap: 10px; margin: 0 4px 14px; padding: 10px 12px; border: 2.5px solid var(--edge); border-radius: 16px; background: var(--card); color: var(--ink); box-shadow: 3px 3px 0 var(--edge); }
+.unit.open > .snd-row:not([hidden]) { display: flex; }
+.snd-row > .ic { flex: none; }
+.snd-row.done { background: var(--mint); }
+.snd-row.run > .ic { animation: sndDrop 1.2s ease-in-out infinite; }
+.snd-main { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.snd-main b { font: 800 .88rem/1.25 var(--display); overflow-wrap: anywhere; }
+.snd-main small { font-size: .82rem; font-weight: 600; color: var(--ink-2); }
+.snd-row.done .snd-main small { color: var(--ink); }
+.snd-bar { display: block; height: 10px; border: 2px solid var(--edge); border-radius: 6px; background: var(--card-2); overflow: hidden; }
+.snd-bar i { display: block; height: 100%; background: var(--lime); transition: width .4s var(--ease); }
+.snd-row .btn { flex: none; min-height: 42px; padding: 6px 14px; font-size: .9rem; }
+@keyframes sndDrop { 50% { translate: 0 3px; } }
+@media (prefers-reduced-motion: reduce) { .snd-row.run > .ic { animation: none; } }
+.upd-plaque { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 12px 14px; border: 3px solid var(--edge); border-radius: 20px; color: var(--ink); box-shadow: var(--shadow); }
+.upd-plaque.ready { background: var(--lime); }
+.upd-plaque.stale { background: var(--yellow); }
+.upd-plaque > .ic { flex: none; }
+.upd-plaque > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.upd-plaque b { font: 800 .95rem/1.25 var(--display); overflow-wrap: anywhere; }
+.upd-plaque small { font-weight: 600; }
+.upd-plaque .btn { flex: none; }
+@media (max-width: 400px) { .snd-row, .upd-plaque { flex-wrap: wrap; } .snd-row .btn, .upd-plaque .btn { flex: 1 1 100%; } }

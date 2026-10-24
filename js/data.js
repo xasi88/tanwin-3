@@ -3,6 +3,7 @@ import { clusters, waqfTr, M } from "./arabic.js";
 import { byChar, byId, SOUND_PAIRS } from "./letters.js";
 import { rulesIn } from "./rules.js";
 import { ROOT } from "./env.js";
+import { preferred, seen } from "./prefer.js";
 
 const pad = (n) => String(n).padStart(3, "0");
 const cache = new Map();
@@ -66,21 +67,21 @@ export function letterExamples(id, n = 3) {
   const l = byId[id];
   if (id === "alif") {
     // как у других букв: слова, которые начинаются с алифа (с хамзой), по одному на أَ «а», إِ «и», أُ «у»
-    const pool = words({ level: "tanween", minLen: 3, maxLen: 5, filter: (w) => /^[أإ]/.test(w.d) && !w.stop }).sort((a, b) => a.li - b.li || b.n - a.n);
+    const pool = preferred(words({ level: "tanween", minLen: 3, maxLen: 5, filter: (w) => /^[أإ]/.test(w.d) && !w.stop }), n).sort((a, b) => a.li - b.li || b.n - a.n);
     const out = [];
     for (const v of [M.FATHA, M.KASRA, M.DAMMA]) { const w = pool.find((x) => x.d[1] === v); if (w) out.push(w); }
-    return out.slice(0, n);
+    return seen(out.slice(0, n));
   }
   let pool = words({ level: "shadda", maxLen: 5, startsWith: id === "hamza" ? "ء" : l.ch });
-  pool = [...pool].sort((a, b) => a.li - b.li || b.n - a.n);
+  pool = [...preferred(pool, n)].sort((a, b) => a.li - b.li || b.n - a.n);
   // разнообразие: не больше двух слов одного уровня подряд
   const out = [];
   for (const w of pool) { if (out.length >= n) break; if (!out.some((x) => x.skel === w.skel)) out.push(w); }
-  return out;
+  return seen(out);
 }
 /** Алиф после фатхи в середине слова тянет «аа»: قَالَ «къоола». */
 export const alifMaddExamples = (n = 2) =>
-  words({ level: "madd", exact: true, maxLen: 4, filter: (w) => /َا./.test(w.d) && !w.f.includes("g") && !w.stop }).sort((a, b) => b.n - a.n).slice(0, n);
+  seen(preferred(words({ level: "madd", exact: true, maxLen: 4, filter: (w) => /َا./.test(w.d) && !w.f.includes("g") && !w.stop }), n).sort((a, b) => b.n - a.n).slice(0, n));
 
 // Минимальные пары: слова Корана, отличающиеся одной трудной буквой (готовый список data/pairs.json)
 let PAIRS = null;

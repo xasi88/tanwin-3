@@ -1,5 +1,6 @@
 // Плеер урока: карточки теории, упражнения, повтор ошибок, итог.
 import { h, ar, rich, tr, icon, wordChip, cardTr, playBtn, toast, confetti, ring, shuffle, sample, plural, modal, mixed, sizeButton, skipBtn } from "./ui.js";
+import { preferred, seen as seenPick } from "./prefer.js";
 import { build, quiz, ruleIndex, stepForKey } from "./exercises.js";
 import { g, you } from "./speech.js";
 import { byId, forms, POINTS, ZONES, LETTERS } from "./letters.js";
@@ -81,7 +82,7 @@ async function ruleExamples(code, n = 4, keep = null) {
   let cand = idx.filter((x) => x.codes.includes(code) && (!keep || keep(x)));
   if (cand.length < n * 2) cand = [...cand, ...rareExamples(code).filter((x) => !keep || keep(x))]; // редкие правила: со всего Корана
   const seen = new Set();
-  return shuffle(cand).filter((x) => { const p = plain(x.w); if (seen.has(p)) return false; seen.add(p); return true; }).slice(0, n);
+  return seenPick(shuffle(preferred(cand, n)).filter((x) => { const p = plain(x.w); if (seen.has(p)) return false; seen.add(p); return true; }).slice(0, n));
 }
 // Мадд и правила на стыке слов (2.0): пример звучит куском аята голосом Хусари, вместе со следующим словом, если
 // причина в нём. Берутся только примеры с надёжным временем слов (js/data.js → husarySpan).
@@ -234,9 +235,12 @@ function stopNote(w) {
 }
 
 // ---------- Чтение и запись голоса ----------
+// слова для чтения вслух, записи голоса и итога этапа; вынесены, чтобы tools/audit/sound-packs.mjs брал их так же, как урок
+const readWords = (step) => sample(lessonWords({ level: step.level, need: step.need || "", avoid: step.avoid || "", maxLen: step.maxLen || 6 }, step.n).slice(0, 300), step.n);
+const speakWord = (step) => sample(lessonWords({ level: step.level, maxLen: 5 }, 4).slice(0, 60), 1)[0];
+const showWords = (u) => (SHOW_LEVEL[u.id] ? sample(lessonWords({ level: SHOW_LEVEL[u.id], maxLen: 5 }, 3).slice(0, 40), 3) : []);
 function readStep(step, api) {
-  const pool = lessonWords({ level: step.level, need: step.need || "", avoid: step.avoid || "", maxLen: step.maxLen || 6 }, step.n);
-  const ws = sample(pool.slice(0, 300), step.n);
+  const ws = readWords(step);
   let i = 0, good = 0;
   const box = h("div.read-drill");
   const show = () => {
@@ -260,7 +264,7 @@ function readStep(step, api) {
 }
 
 function speakStep(step, api) {
-  const w = sample(lessonWords({ level: step.level, maxLen: 5 }, 4).slice(0, 60), 1)[0];
+  const w = speakWord(step);
   const box = h("div.speak");
   const wave = (env, cls) => h("div.wave", { class: cls }, ...(env || []).map((v) => h("i", { style: { height: Math.max(4, v * 100) + "%" } })));
   const ref = h("div.wave-slot");
@@ -314,7 +318,7 @@ async function showcase(u) {
   const head = h("div.label", null, icon("sparkle", { size: 16 }), "Смотрите, что вы уже умеете");
   if (SHOW_VERSE[u.id]) return [head, h("p", null, "Этот аят Корана вы теперь читаете сами, слово за словом. Прочитайте вслух, потом послушайте чтеца."), await verseBlock(SHOW_VERSE[u.id])];
   if (SHOW_LEVEL[u.id]) {
-    const ws = sample(lessonWords({ level: SHOW_LEVEL[u.id], maxLen: 5 }, 3).slice(0, 40), 3);
+    const ws = showWords(u);
     return ws.length ? [head, h("p", null, "Эти слова из Корана вы теперь читаете сами. Прочитайте вслух, потом нажмите на слово и проверьте себя по чтецу."), wordsRow(ws, { showTr: false })] : null;
   }
   if (u.id === 2 || u.id === 3) return [head,
@@ -659,4 +663,4 @@ export const fmtTime = (ms) => {
   if (m < 60) return s < 600 && s % 60 ? `${Math.floor(s / 60)} мин ${s % 60} с` : `${m} мин`;
   return `${Math.floor(m / 60)} ч ${m % 60 ? (m % 60) + " мин" : ""}`.trim();
 };
-export { renderCard, zoneCard, ruleCard, verseBlock };
+export { renderCard, zoneCard, ruleCard, verseBlock, readWords, speakWord, showWords, SHOW_VERSE, MUQ };

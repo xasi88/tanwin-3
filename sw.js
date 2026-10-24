@@ -1,7 +1,8 @@
 // Service worker TanWin: офлайн-режим. Список файлов и версия обновляются командой: node tools/build.mjs
-const VERSION = "186df0a39b";
+const VERSION = "2c336fd1b8";
 const CORE = `tanwin-core-${VERSION}`;
 const AUDIO = "tanwin-audio";
+const SOUND = "tanwin-sound"; // звук этапов, скачанный заранее (js/sound.js): сам не удаляется
 const ROOT = new URL("./", self.location).pathname;
 // Страницы самого приложения
 const APP_PAGES = [ROOT, ROOT + "index.html"];
@@ -166,6 +167,7 @@ const FILES = [
   "data/q/113.json",
   "data/q/114.json",
   "data/rare.json",
+  "data/sounds.json",
   "data/surahs.json",
   "fonts/amiri-quran.woff2",
   "fonts/hafs.woff2",
@@ -200,7 +202,9 @@ const FILES = [
   "js/letters.js",
   "js/path.js",
   "js/posthog-loader.js",
+  "js/prefer.js",
   "js/rules.js",
+  "js/sound.js",
   "js/speech.js",
   "js/store.js",
   "js/syllables.js",
@@ -330,10 +334,11 @@ self.addEventListener("fetch", (e) => {
 
   // Аудио чтецов: из кэша, если есть; короткие пословные записи сохраняем при первом прослушивании
   if (AUDIO_HOSTS.includes(url.hostname)) {
+    if (url.searchParams.has("tw")) return; // скачивание звука этапа: мимо кэша слов, страница сама кладёт запись в свой кэш
     const key = url.origin + url.pathname;
     e.respondWith((async () => {
       const c = await caches.open(AUDIO);
-      const hit = await c.match(key);
+      const hit = (await c.match(key)) || (await caches.match(key, { cacheName: SOUND }));
       if (hit) return rangeResponse(req, hit);
       if (url.hostname !== WORDS_HOST) return fetch(req);
       // запись слова качаем один раз: эта же загрузка и звучит, и ложится в кэш (до 1.34.0 слово скачивалось дважды).

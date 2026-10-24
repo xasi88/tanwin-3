@@ -25,6 +25,47 @@ function toggle(label, key, sub) {
   return h("div.set-row", null, h("div", null, h("span.set-label", null, label), sub ? h("small.muted", null, sub) : null), t);
 }
 const set = (k) => (v) => store.set((s) => { s.settings[k] = v; });
+
+// «Звук без интернета» (3.0, js/sound.js): сам ли скачивать звук этапа, скачать всё, удалить скачанное
+function soundSettings() {
+  const on = store.get().settings.soundAuto !== false; // по умолчанию включено
+  const sw = h("button.switch", { type: "button", role: "switch", "aria-checked": on ? "true" : "false", "aria-label": "Скачивать звук этапа само", class: on ? "on" : "" }, h("i"));
+  sw.addEventListener("click", () => { const v = !sw.classList.contains("on"); store.set((s) => { s.settings.soundAuto = v; }); sw.classList.toggle("on", v); sw.setAttribute("aria-checked", v); });
+  const info = h("small.muted.set-note", null, "Считаю…");
+  const all = h("button.btn.secondary.wide", { type: "button" }, icon("down", { size: 18 }), "Скачать звук всех этапов");
+  const del = h("button.btn.ghost.wide", { type: "button" }, "Удалить скачанный звук");
+  let busy = false;
+  const draw = async () => {
+    const { unitState, savedMb } = await import("../sound.js");
+    let left = 0, done = 0;
+    for (let u = 1; u <= 14; u++) { const st = await unitState(u); if (st.done) done++; else left += st.mb; }
+    info.textContent = `Скачано ${savedMb()} МБ, этапов со звуком: ${done} из 14.` + (left ? ` Осталось примерно ${left} МБ.` : " Скачано всё.");
+    all.hidden = !left;
+    del.hidden = !savedMb();
+  };
+  all.addEventListener("click", async () => {
+    if (busy) return;
+    busy = true; all.disabled = true;
+    const { downloadUnit } = await import("../sound.js");
+    let ok = true;
+    for (let u = 1; u <= 14; u++) { info.textContent = `Скачиваю звук этапа ${u} из 14…`; ok = (await downloadUnit(u)) && ok; if (!navigator.onLine) break; }
+    busy = false; all.disabled = false;
+    toast(ok ? "Звук всех этапов сохранён ✓" : "Скачалось не всё. Нажмите ещё раз, когда связь будет лучше.", 5000);
+    draw();
+  });
+  del.addEventListener("click", async () => {
+    if (!(await confirmBox("Удалить скачанный звук?", "Уроки снова будут брать звук слов и аятов из интернета. Звук букв и слогов останется: он внутри приложения.", "Удалить", "Отмена"))) return;
+    await (await import("../sound.js")).deleteSound();
+    toast("Скачанный звук удалён", 3000);
+    draw();
+  });
+  draw();
+  return [
+    h("div.set-row", null, h("div", null, h("span.set-label", null, "Скачивать звук этапа само"), h("small.muted", null, "Пока есть связь, приложение скачивает звук этапа, на котором вы сейчас. Большой этап: только по Wi-Fi.")), sw),
+    h("small.muted.set-note", null, "Звук букв и слогов всегда внутри приложения. Слова и аяты приходят из интернета. Скачайте их заранее: уроки будут звучать и без связи. Звук каждого этапа можно скачать и на «Пути», под названием этапа."),
+    info, all, del,
+  ];
+}
 // обращение и род меняют тексты всего приложения: перерисовываем экран
 const profile = (k) => (v) => { store.set((s) => { s.profile[k] = v; }); window.dispatchEvent(new Event("hashchange")); };
 /** «Полный экран»: переключатель сразу разворачивает или сворачивает приложение. */
@@ -137,6 +178,7 @@ export function SettingsView() {
       seg("Русские буквы под словами", [["show", "Показывать"], ["tap", "По нажатию"], ["hide", "Скрыть"]], s.settings.translit, set("translit")),
       h("small.muted.set-note", null, "Подсказка, как читать слово. Чем раньше вы будете читать без неё, тем лучше. Советуем «По нажатию»: подсказка появится, когда вы нажмёте на слово."),
       toggle("Звуки ответов", "sfx", "Короткий звук на верный и неверный ответ")),
+    group("t-sky", "down", "Звук без интернета", ...soundSettings()),
     group("t-lime", "path", "Обучение",
       toggle("Открыть все уроки", "unlockAll", "Все уроки и суры пути открыты сразу. Пригодится, если прогресс потерялся: откройте всё и продолжайте с того места, где остановились.")),
     group("t-violet", "down", "Прогресс и данные",
