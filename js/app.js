@@ -35,10 +35,8 @@ export function applySettings() {
     document.fonts?.load?.(`40px ${font}`, "بسم")?.then(queueFit, () => {});
   }
   const dark = s.theme === "dark" || (s.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
-  // строка браузера в цвет фона; при чтении Корана: в цвет спокойной страницы
-  const main = dark ? "#1d1147" : "#6b3ff0";
-  const calm = /^#\/(read|juz|page|mark)/.test(location.hash), night = dark;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", calm ? (night ? "#0a0f1f" : "#fbf7ef") : main);
+  // строка браузера в цвет фона, и при чтении Корана тоже
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#1d1147" : "#6b3ff0");
 }
 
 // ---------- Навигация ----------

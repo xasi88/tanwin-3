@@ -230,7 +230,7 @@ export function renderVerses(s, data, meta, { mode = "mushaf", colors = true, tr
 // Отметка начала страницы мусхафа Мадины (604 страницы). Нажатие: открыть эту страницу целиком.
 function pageMark(p, juz, s, a) {
   return h("a.page-mark", { href: `#/page/${p}`, "data-p": p, dir: "ltr", title: "Открыть страницу мусхафа" },
-    h("span", null, `страница ${p}`), juz ? h("span", null, `джуз ${juz}`) : null);
+    h("b.pm-chip", null, h("span", null, `страница ${p}`), juz ? h("span", null, `джуз ${juz}`) : null));
 }
 
 // ---------- Чтец ведёт текст ----------
@@ -840,8 +840,9 @@ function readSession(list, { kind, parts, juz = 0, page = 0, start = null, mark 
   };
   const head = h("div.focus-head", null, jm.el, menu);
   // при открытии: только текст (quiet); панели появляются по нажатию на экран
-  const root = h("div.focus.calm", { class: `kind-${kind} quiet` }, prog, head, scroller, wheel.el, bar);
+  const root = h("div.focus", { class: `kind-${kind} quiet` }, prog, head, scroller, wheel.el, bar);
   new ResizeObserver(() => root.style.setProperty("--head-h", head.offsetHeight + "px")).observe(head); // колесо страниц начинается под меню
+  new ResizeObserver(() => root.style.setProperty("--juz-h", jm.el.offsetHeight + "px")).observe(jm.el); // текст начинается под шапкой, даже когда крупная подпись в две строки
   // панели показывает и прячет только нажатие на экран: открылись, остаются, пока не нажмёшь ещё раз.
   // Карточка слова, чтец по номеру аята, колесо страниц и автопрокрутка сами панели не открывают.
   const reveal = () => { if (root.isConnected) fillMenu(); root.classList.remove("quiet"); };

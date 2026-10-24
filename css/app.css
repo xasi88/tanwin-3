@@ -1,4 +1,4 @@
-/* TanWin: стили. 3.0 «Кино»: яркие наклейки на фоне в точку, ночная тема, спокойная страница для чтения Корана. */
+/* TanWin: стили. 3.0 «Кино»: яркие наклейки на фоне в точку, ночная тема; чтение Корана в том же виде. */
 @font-face { font-family: "Amiri Quran"; src: url("../fonts/amiri-quran.woff2") format("woff2"); font-display: swap; }
 /* Арабские шрифты на выбор. Вертикальные метрики приведены к Amiri Quran (+1.40/−0.80 em), размер, к его видимой величине:
    вёрстка рассчитана на них, и при смене шрифта строки и карточки не «прыгают». Файл загружается, только когда шрифт выбран. */
@@ -13,7 +13,7 @@
 
 /* Цвета 3.0 двумя наборами. «На наклейке» (--card, --ink...): светлая наклейка, чернильный текст, так выглядит почти всё.
    «На фоне» (--bg, --on-bg): текст прямо на цветном фоне в точку (заголовок экрана, подписи разделов).
-   Ночная тема меняет только фон и тени: наклейки те же (решение автора 2026-10-24). Чтение Корана: спокойная страница (.calm ниже). */
+   Ночная тема меняет только фон и тени: наклейки те же (решение автора 2026-10-24). Чтение Корана тоже: текст на светлой наклейке. */
 :root {
   --bg: #6b3ff0; --bg-2: #5a2fd6; --card: #fff8f2; --card-2: #ffffff; --card-3: #f1ebff;
   --ink: #130a30; --ink-2: #4a3f73; --ink-3: #6e5f9e; --line: #d9cfee; --line-2: #c4b6e6;
@@ -62,38 +62,6 @@
   --shadow-lg: 6px 6px 0 #07031a;
   color-scheme: dark;
 }
-/* Спокойная страница для чтения Корана (режим чтения .focus): днём «пергамент», ночью «ночное небо», как в 2.x.
-   Яркие на ней только панели и кнопки (решение автора 2026-10-24). */
-.calm {
-  --bg: #fbf7ef; --bg-2: #f3ebdb; --card: #ffffff; --card-2: #fffaf2; --card-3: #f6f0e4;
-  --ink: #1e1b2e; --ink-2: #5a566e; --ink-3: #716c86; --line: #eadfca; --line-2: #dfd2b8;
-  --accent: #5b2fe0; --accent-2: #4a22c4; --accent-soft: #ece4ff;
-  --gold: #c68a1c; --gold-2: #e8b440; --gold-soft: #fbefd2; --gold-text: #946310;
-  color: var(--ink);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .calm {
-    --bg: #0a0f1f; --bg-2: #0f1630; --card: #141c36; --card-2: #19233f; --card-3: #1e2a4a;
-    --ink: #eef0fb; --ink-2: #aeb5d4; --ink-3: #7780a6; --line: #253257; --line-2: #2f3e68;
-    --accent: #b39bff; --accent-2: #9c80ff; --accent-soft: #2a2350;
-    --gold: #e9b949; --gold-2: #ffd97a; --gold-soft: #3a2f14; --gold-text: #e9b949;
-    --r-w: #7d84a3; --r-l: #7d84a3; --r-s: #7d84a3;
-    --r-n: #f2b640; --r-p: #ff9a3d; --r-o: #ff5c6c; --r-u: #ff7f94; --r-x: #ff3d7a;
-    --r-q: #5aa9ff; --r-g: #3ddc84; --r-f: #b38cff; --r-F: #f070e8; --r-i: #37d0f0;
-    --r-d: #2fd3a2; --r-D: #c2d64a; --r-h: #8fe04a; --r-j: #9aa6c0; --r-k: #9aa6c0;
-  }
-}
-:root[data-theme="dark"] .calm {
-  --bg: #0a0f1f; --bg-2: #0f1630; --card: #141c36; --card-2: #19233f; --card-3: #1e2a4a;
-  --ink: #eef0fb; --ink-2: #aeb5d4; --ink-3: #7780a6; --line: #253257; --line-2: #2f3e68;
-  --accent: #b39bff; --accent-2: #9c80ff; --accent-soft: #2a2350;
-  --gold: #e9b949; --gold-2: #ffd97a; --gold-soft: #3a2f14; --gold-text: #e9b949;
-  --r-w: #7d84a3; --r-l: #7d84a3; --r-s: #7d84a3;
-  --r-n: #f2b640; --r-p: #ff9a3d; --r-o: #ff5c6c; --r-u: #ff7f94; --r-x: #ff3d7a;
-  --r-q: #5aa9ff; --r-g: #3ddc84; --r-f: #b38cff; --r-F: #f070e8; --r-i: #37d0f0;
-  --r-d: #2fd3a2; --r-D: #c2d64a; --r-h: #8fe04a; --r-j: #9aa6c0; --r-k: #9aa6c0;
-}
-
 /* ---------- База ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; font-size: calc(100% * var(--ui-scale, 1)); }
@@ -1830,14 +1798,51 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .hero-card { padding-top: 18px; }
 .hero-kicker { position: relative; top: auto; left: auto; justify-self: start; margin: -36px 0 0 -4px; }
 
-/* ---------- 3.0: чтение Корана: страница спокойная, панели и кнопки: яркие наклейки ---------- */
-.focus-menu, .focus-bar, .page-wheel, .pw-tip, .focus .juz-card, .reader-tools {
-  --card: #fff8f2; --card-2: #ffffff; --card-3: #f1ebff; --ink: #130a30; --ink-2: #4a3f73; --ink-3: #6e5f9e; --line: #d9cfee; --line-2: #c4b6e6;
-  --accent: #5b2fe0; --accent-2: #4a22c4; --accent-soft: #ece4ff; --gold: #b07a12; --gold-soft: #fff1c9; --gold-text: #8a5b06;
-  color: var(--ink);
-}
-:root[data-theme="dark"] :is(.focus-menu, .focus-bar, .page-wheel, .pw-tip) { --card: #f3ecfb; --card-2: #fbf8ff; --card-3: #e4daf8; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.focus-menu, .focus-bar, .page-wheel, .pw-tip) { --card: #f3ecfb; --card-2: #fbf8ff; --card-3: #e4daf8; } }
+/* ---------- 3.0: чтение Корана в виде меню (решение автора 2026-10-24, вечер): фон в точку, текст на светлой наклейке,
+   название суры: жёлтая наклейка, номер аята: жёлтая звёздочка, как номер суры в списке. Ночью меняются только фон и тени. ---------- */
+.focus { color: var(--ink); background-image: radial-gradient(var(--bg-2) 2.2px, transparent 2.8px); background-size: 22px 22px; }
+.focus-part { position: relative; padding: 0 14px 20px; border: 3px solid var(--edge); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-lg); }
+.focus-part:first-child { margin-top: 26px; }
+.focus-part + .focus-part { margin-top: 48px; }
+@media (min-width: 700px) { .focus-part { padding: 0 28px 26px; } }
+.focus .surah-banner { width: fit-content; min-width: min(100%, 15rem); max-width: calc(100% - 8px); margin: -26px auto 12px; padding: 0 22px 8px; border: 3px solid var(--edge); border-radius: 18px; background: var(--yellow); box-shadow: var(--shadow); }
+.focus .surah-banner .ar { color: var(--ink); }
+.focus .surah-banner small { margin-top: -4px; color: var(--ink); font: 800 .72rem/1.3 var(--display); text-transform: uppercase; letter-spacing: .03em; text-align: center; }
+.focus .part-cap { width: fit-content; max-width: calc(100% - 8px); margin: -17px auto 14px; padding: 5px 14px; border: 2.5px solid var(--edge); border-radius: 14px; background: var(--lime); color: var(--ink); box-shadow: 3px 3px 0 var(--edge); font: 800 .72rem/1.3 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+.focus .bismillah { margin-top: 0; }
+.page-mark { gap: 8px; margin: 14px 0; color: var(--ink); }
+.page-mark::before, .page-mark::after { height: 0; background: none; border-top: 2.5px dashed var(--line-2); }
+.page-mark:hover { color: var(--ink); }
+.pm-chip { padding: 4px 12px; border: 2px solid var(--edge); border-radius: 12px; background: var(--card-3); font: 800 .7rem/1.3 var(--display); letter-spacing: .03em; text-align: center; }
+.pm-chip span + span { margin-left: .35em; }
+.ayah-mark { position: relative; isolation: isolate; background: none; color: var(--ink); }
+.ayah-mark::before, .ayah-mark::after { content: ""; position: absolute; clip-path: polygon(50% 0, 64% 15%, 85% 15%, 85% 36%, 100% 50%, 85% 64%, 85% 85%, 64% 85%, 50% 100%, 36% 85%, 15% 85%, 15% 64%, 0 50%, 15% 36%, 15% 15%, 36% 15%); }
+.ayah-mark::after { inset: 0; z-index: -2; background: var(--edge); }
+.ayah-mark::before { inset: 2.5px; z-index: -1; background: var(--star, var(--yellow)); }
+.focus .sel .ayah-mark { --star: var(--lime); border-radius: 0; background: none; box-shadow: none; }
+/* шапка с точками-джузами: сплошная полоса в точку, текст уходит под неё; в тишине бледнеют только точки и подписи */
+.focus .focus-juz, .focus .focus-juz:has(.goal-strip:not([hidden])) { background: var(--bg) radial-gradient(var(--bg-2) 2.2px, transparent 2.8px) 0 0 / 22px 22px;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 10px), transparent); mask-image: linear-gradient(#000 calc(100% - 10px), transparent); }
+.focus.quiet .focus-juz { opacity: 1; }
+.focus-scroll { padding-top: max(calc(64px + env(safe-area-inset-top)), var(--juz-h, 0px)); }
+.focus:has(.focus-mode) .focus-scroll { padding-top: max(calc(86px + env(safe-area-inset-top)), var(--juz-h, 0px)); }
+.focus:has(.goal-strip:not([hidden])) .focus-scroll { padding-top: max(calc(92px + env(safe-area-inset-top)), var(--juz-h, 0px)); }
+.focus .focus-juz > * { transition: opacity .35s var(--ease); }
+.focus.quiet .focus-juz > * { opacity: .6; }
+.focus .jm-dots i { --off: color-mix(in srgb, var(--on-bg) 30%, transparent); }
+.focus .jm-dots i.done { background: var(--lime); }
+.focus .jm-dots i.cur { background: linear-gradient(90deg, var(--lime) calc(var(--f) * 100%), var(--off) 0); box-shadow: 0 0 0 2px color-mix(in srgb, var(--lime) 45%, transparent); }
+.focus .jm-cap { color: var(--on-bg-2); }
+.focus-mode { color: var(--yellow); font-family: var(--display); font-weight: 700; }
+.focus .gs-bar { background: color-mix(in srgb, var(--on-bg) 25%, transparent); }
+.focus .gs-bar i { background: var(--lime); }
+.focus .gs-cap { color: var(--on-bg); }
+.focus .goal-strip.done .gs-cap { color: var(--lime); }
+.focus-prog { background: linear-gradient(90deg, var(--lime), var(--yellow)); }
+.focus-end .muted { color: var(--on-bg-2); font-weight: 600; }
+.focus-end .btn.ghost { color: var(--on-bg); }
+.focus-end .btn.ghost:hover { color: var(--ink); }
+.focus-menu, .focus-bar, .page-wheel, .pw-tip, .reader-tools { color: var(--ink); }
 .focus-menu { border: 3px solid var(--edge); background: var(--card); box-shadow: var(--shadow-lg); backdrop-filter: none; -webkit-backdrop-filter: none; }
 .fm-info { color: var(--ink-2); font-family: var(--display); font-weight: 700; }
 .fm-tile { border: 2px solid var(--edge); border-radius: 13px; background: var(--card-2); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); transition: translate .1s, box-shadow .1s; }
@@ -1857,7 +1862,8 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .reader-tools { border: 3px solid var(--edge); background: var(--card); box-shadow: var(--shadow); backdrop-filter: none; -webkit-backdrop-filter: none; }
 .tool { border: 2px solid var(--edge); background: var(--card-2); color: var(--ink); }
 .tool.on { background: var(--sky); color: var(--ink); border-color: var(--edge); }
-.focus-done { color: var(--good); }
+.focus-done { padding: 6px 14px; border: 2.5px solid var(--edge); border-radius: 14px; background: var(--lime); color: var(--ink); box-shadow: 3px 3px 0 var(--edge); font-family: var(--display); font-weight: 800; }
+.focus-done.todo { background: var(--yellow); color: var(--ink); }
 .focus .btn.secondary { --b: #fff8f2; --bi: #130a30; background: #fff8f2; color: #130a30; }
 
 /* ---------- 3.0: плитки звука, форм и слогов в окнах и уроках ---------- */
@@ -1885,7 +1891,6 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .verses::before { border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
 .focus .verses { border: 0; box-shadow: none; }
 .qw.now { background: var(--yellow); box-shadow: 0 0 0 3px var(--yellow); }
-.calm .qw.now { background: var(--gold-soft); box-shadow: 0 0 0 3px var(--gold-soft); }
 /* самый крупный текст: номер в колесе страниц и названия наград помещаются, плитки меню чтения переносят слова по слогам */
 .pw-list i, .pw-list i.on { font-family: var(--body); }
 .pw-list i.on { font-size: min(.95rem, 15px); }
