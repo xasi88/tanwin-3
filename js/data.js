@@ -95,14 +95,17 @@ export async function loadSurahs() {
   return SURAHS;
 }
 export const surahMeta = (n) => SURAHS?.[n - 1];
-/** Сура: { id, v: [[слова-разметка[], перевод, тайминги Хусари[], тайминги Афаси[]], …] } */
+/** Сура: { id, v: [[слова-разметка[], перевод, тайминги Хусари[], тайминги Афаси[], [страница, строки…], джуз, тайминги аш-Шатри[]], …] } */
 export const loadSurah = (n) => json(`data/q/${pad(n)}.json`);
 export const wordAudioUrl = (key) => `https://audio.qurancdn.com/wbw/${key}.mp3`;
 export const wordKey = (s, a, w) => `${pad(s)}_${pad(a)}_${pad(w)}`;
 export const RECITERS = {
-  husary: { name: "Махмуд аль-Хусари", note: "обучающее чтение, медленно", url: (s, a) => `https://everyayah.com/data/Husary_Muallim_128kbps/${pad(s)}${pad(a)}.mp3`, seg: 2 },
-  afasy: { name: "Мишари Рашид аль-Афаси", note: "муратталь, обычный темп", url: (s, a) => `https://verses.quran.com/Alafasy/mp3/${pad(s)}${pad(a)}.mp3`, seg: 3 },
+  husary: { name: "Махмуд аль-Хусари", short: "Хусари", note: "обучающее чтение, медленно", url: (s, a) => `https://everyayah.com/data/Husary_Muallim_128kbps/${pad(s)}${pad(a)}.mp3`, seg: 2 },
+  afasy: { name: "Мишари Рашид аль-Афаси", short: "Афаси", note: "муратталь, обычный темп", url: (s, a) => `https://verses.quran.com/Alafasy/mp3/${pad(s)}${pad(a)}.mp3`, seg: 3 },
+  shatri: { name: "Абу Бакр аш-Шатри", short: "Шатри", note: "мягкий голос, спокойный темп", url: (s, a) => `https://verses.quran.com/Shatri/mp3/${pad(s)}${pad(a)}.mp3`, seg: 6 },
 };
+/** Выбранный чтец: ключ из RECITERS. Незнакомый ключ в настройках: Хусари. */
+export const reciterOf = (k) => (RECITERS[k] ? k : "husary");
 export { pad };
 
 // Кусок аята голосом Хусари (2.0): пример мадда звучит так, как его читают в аяте. В записи отдельного слова

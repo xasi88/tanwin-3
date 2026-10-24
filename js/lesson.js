@@ -3,7 +3,7 @@ import { h, ar, rich, tr, icon, wordChip, cardTr, playBtn, toast, confetti, ring
 import { build, quiz, ruleIndex, stepForKey } from "./exercises.js";
 import { g, you } from "./speech.js";
 import { byId, forms, POINTS, ZONES, LETTERS } from "./letters.js";
-import { letterExamples, lessonWords, words, minimalPairs, loadSurah, wordKey, rareExamples, bank, alifMaddExamples, husarySpan } from "./data.js";
+import { letterExamples, lessonWords, words, minimalPairs, loadSurah, wordKey, rareExamples, bank, alifMaddExamples, husarySpan, RECITERS, reciterOf } from "./data.js";
 import { RULES, plain, rulesIn, onlyRule, causeMarkup, CAUSE_CODES, CAUSE_NOTE, SPAN_CODES } from "./rules.js";
 import { M, syllRu, stripStops } from "./arabic.js";
 import { diagram } from "./diagram.js";
@@ -162,7 +162,7 @@ async function verseBlock(key, { tapWords = false } = {}) {
       h("span.muted", null, tapWords ? "Нажимайте на слова справа налево" : `Сура ${s}, аят ${a}`)));
 }
 function highlightWord(box, v, ms) {
-  const segIdx = store.get().settings.reciter === "afasy" ? 3 : 2;
+  const segIdx = RECITERS[reciterOf(store.get().settings.reciter)].seg;
   const seg = v[segIdx] || [];
   [...box.children].forEach((el, i) => el.classList.toggle("now", ms >= 0 && seg[i * 2] >= 0 && ms >= seg[i * 2] && ms < seg[i * 2 + 1] + 60));
 }

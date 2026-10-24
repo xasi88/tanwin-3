@@ -1,7 +1,7 @@
 // «Ещё»: разделы по группам (учимся, о TanWin, связь) и об источниках. «Настройки»: отдельный экран #/settings (с 3.0).
 import { h, ar, icon, toast, confirmBox, plural, SIZES, AR_FONTS, arFont, keep } from "../ui.js";
 import { store, backupDone } from "../store.js";
-import { RECITERS } from "../data.js";
+import { RECITERS, reciterOf } from "../data.js";
 import { go, installApp, checkUpdate } from "../app.js";
 import { isInstalled, onInstallChange } from "../install.js";
 import { canFullscreen, wantFullscreen, setFullscreen } from "../fullscreen.js";
@@ -73,7 +73,7 @@ export function MoreView() {
       h("button.more-link.t-paper", { type: "button", onclick: checkUpdate }, h("span.ml-ic", null, icon("repeat", { size: 22, sw: 2.2 })), h("div", null, h("b", null, "Проверить обновление"), h("small.muted", null, "Обновления приходят сами. Зависло: включите или выключите VPN")), icon("right", { size: 18, sw: 2.6 }))),
     h("section.card.about", null,
       h("h3", null, "Об источниках"),
-      h("p", null, "Текст Корана (мусхаф Мадины, риваят Хафса от Асыма), разметка таджвида, пословное аудио и тайминги слов: ", h("a", { href: "https://quran.com", target: "_blank", rel: "noopener" }, "Quran.com"), ". Аудио аятов: Махмуд Халиль аль-Хусари (обучающее чтение) и Мишари Рашид аль-Афаси: ", h("a", { href: "https://everyayah.com", target: "_blank", rel: "noopener" }, "EveryAyah"), " и Quran.com. Озвучка отдельных букв и слогов: записи букваря «Каида Нурания» из проекта ", h("a", { href: "https://github.com/ibr7h/al-qaida-nooraniyya", target: "_blank", rel: "noopener" }, "al-qaida-nooraniyya"), ". Перевод смыслов: Эльмир Кулиев."),
+      h("p", null, "Текст Корана (мусхаф Мадины, риваят Хафса от Асыма), разметка таджвида, пословное аудио и тайминги слов: ", h("a", { href: "https://quran.com", target: "_blank", rel: "noopener" }, "Quran.com"), ". Аудио аятов: Махмуд Халиль аль-Хусари (обучающее чтение), Мишари Рашид аль-Афаси и Абу Бакр аш-Шатри: ", h("a", { href: "https://everyayah.com", target: "_blank", rel: "noopener" }, "EveryAyah"), " и Quran.com. Озвучка отдельных букв и слогов: записи букваря «Каида Нурания» из проекта ", h("a", { href: "https://github.com/ibr7h/al-qaida-nooraniyya", target: "_blank", rel: "noopener" }, "al-qaida-nooraniyya"), ". Перевод смыслов: Эльмир Кулиев."),
       h("p", null, "Шрифты: Amiri Quran (Khaled Hosny), Scheherazade New (SIL Global), Noto Naskh Arabic (Google), Nunito, Unbounded и Manrope: лицензия SIL Open Font License; KFGQPC Uthmanic Script Hafs: Комплекс имени короля Фахда по изданию Священного Корана (Медина)."),
       h("p.muted.small", null, "Приложение не заменяет учителя. Чтение Корана традиционно передаётся из уст в уста (талакки): когда пройдёте путь, прочитайте знающему человеку: он поправит тонкости произношения.")));
 }
@@ -122,7 +122,7 @@ export function SettingsView() {
       h("small.muted.set-note", null, "Засчитывается урок, урок суры, проверка или тренировка, пройденные до конца.")),
     group("t-sky", "sun", "Вид",
       seg("Тема", [["auto", "Как на устройстве"], ["light", "Дневная"], ["dark", "Ночная"]], s.settings.theme, set("theme")),
-      h("small.muted.set-note", null, "Ночная: тёмный фон, чтение Корана на тёмной странице. «Как на устройстве»: тема меняется вместе с телефоном."),
+      h("small.muted.set-note", null, "Ночная: тёмно-фиолетовый фон, наклейки и текст Корана остаются светлыми. «Как на устройстве»: тема меняется вместе с телефоном."),
       sizeRow("uiScale", "Размер текста", "Русский текст, кнопки и меню"),
       fullscreenToggle()),
     group("t-mint", "book", "Арабский текст",
@@ -132,8 +132,8 @@ export function SettingsView() {
       toggle("Цвета таджвида", "tajweed", "Правила в мусхафе раскрашены"),
       toggle("Перевод смыслов", "translation", "Перевод Э. Кулиева при чтении по аятам")),
     group("t-pink", "vol", "Звук и подсказки",
-      seg("Чтец аятов", Object.entries(RECITERS).map(([k, r]) => [k, r.name.split(" ").slice(-1)[0]]), s.settings.reciter, set("reciter")),
-      h("small.muted.set-note", null, "Хусари: медленное обучающее чтение, лучше для учёбы. Афаси: обычный темп. Слова отдельно всегда звучат голосом чтеца Quran.com."),
+      seg("Чтец аятов", Object.entries(RECITERS).map(([k, r]) => [k, r.short]), reciterOf(s.settings.reciter), set("reciter")),
+      h("small.muted.set-note", null, "Хусари: медленное обучающее чтение, лучше для учёбы. Афаси: обычный темп. Шатри: мягкий голос, спокойный темп. Слова отдельно всегда звучат голосом чтеца Quran.com."),
       seg("Русские буквы под словами", [["show", "Показывать"], ["tap", "По нажатию"], ["hide", "Скрыть"]], s.settings.translit, set("translit")),
       h("small.muted.set-note", null, "Подсказка, как читать слово. Чем раньше вы будете читать без неё, тем лучше. Советуем «По нажатию»: подсказка появится, когда вы нажмёте на слово."),
       toggle("Звуки ответов", "sfx", "Короткий звук на верный и неверный ответ")),

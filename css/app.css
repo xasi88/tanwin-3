@@ -826,26 +826,13 @@ a.drill:hover { transform: translateY(-2px); border-color: var(--accent); }
 .read-along .btn.primary { margin-top: 6px; }
 
 /* ---------- Прогресс ---------- */
-.prog-hero { display: grid; gap: 16px; margin-bottom: 16px; }
-.ph-ring { display: grid; justify-items: center; gap: 6px; padding: 20px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
-.ph-ring .ring-label { font-size: 1.8rem; }
 .ph-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .tile { display: grid; gap: 0; padding: 16px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
 .tile .ic { color: var(--accent); margin-bottom: 4px; }
 .tile:nth-child(1) .ic { color: #ff8a1f; } .tile:nth-child(2) .ic { color: var(--gold); }
 .tile b { font-size: 1.5rem; line-height: 1.2; }
 .tile span { font-weight: 800; color: var(--ink-2); }
-@media (min-width: 760px) { .prog-hero { grid-template-columns: 240px 1fr; } }
-.bars { position: relative; display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 6px; height: 170px; align-items: end; padding-top: 18px; container-type: inline-size; }
-.bar-col { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; height: 100%; align-items: end; justify-items: center; gap: 4px; }
-.bar { width: 100%; max-width: 30px; border-radius: 8px 8px 3px 3px; background: var(--card-3); position: relative; transition: height .6s var(--ease); }
-.bar.some { background: color-mix(in srgb, var(--accent) 55%, var(--card-3)); }
-.bar.met { background: linear-gradient(180deg, var(--accent), var(--accent-2)); }
-.bar-v { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: .68rem; font-weight: 900; color: var(--ink-3); padding-bottom: 2px; }
-.bar-col small { font-size: .7rem; color: var(--ink-3); font-weight: 800; justify-self: unsafe center; }
 /* 14 подписей не помещаются (узкий экран, крупный текст): подпись и число нура через день, сегодняшние видны всегда */
-@container (max-width: 13.5em) { .bar-col:nth-last-child(even) :is(small, .bar-v) { visibility: hidden; } }
-.bar-col small.today { color: var(--accent-2); }
 .unit-bars { display: grid; gap: 10px; }
 .ub-row { display: flex; gap: 12px; align-items: center; }
 .ub-ic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--hc) 14%, transparent); flex: none; }
@@ -1348,8 +1335,6 @@ body:has(.focus) .fb-tab::before, body:has(.sura-scrub) .fb-tab::before { inset:
 .mark-edit [hidden] { display: none; }
 .mark-edit .row { margin-top: 8px; }
 .word-pop > .btn.ghost { justify-self: center; }
-.qread { margin-bottom: 16px; }
-.qread .tile:nth-child(5) { grid-column: 1 / -1; }
 
 /* «Пропустить ›» (skipBtn в ui.js): всегда в правом верхнем углу и одного вида: знакомство, первый урок, запись голоса */
 .skip-btn { min-height: 44px; padding: 0 0 0 6px; gap: 0; color: var(--ink-3); white-space: nowrap; flex: none; }
@@ -1643,11 +1628,6 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .juz-btn b { font-family: var(--display); }
 
 /* ---------- 3.0: «Прогресс» ---------- */
-.prog-hero { gap: 18px; margin-bottom: 18px; }
-.ph-ring { border: 3px solid var(--edge); border-radius: 26px; background: var(--card); box-shadow: var(--shadow-lg); rotate: -.6deg; }
-.ph-ring .ring-label { font: 800 1.8rem/1 var(--display); }
-.ph-ring .ring-fg { stroke: var(--accent); }
-.ph-ring .muted { font-weight: 700; color: var(--ink-2); }
 .ph-stats { gap: 12px; }
 .tile { border: 3px solid var(--edge); border-radius: 20px; background: var(--card); box-shadow: var(--shadow); }
 .tile:nth-child(1) { background: var(--yellow); rotate: -1deg; } .tile:nth-child(2) { background: var(--lime); rotate: .8deg; }
@@ -1657,13 +1637,6 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .tile b { font: 800 1.45rem/1.2 var(--display); }
 .tile span { color: var(--ink); }
 .tile small.muted { color: var(--ink); opacity: .85; font-weight: 600; }
-.bars { gap: 6px; }
-.bar { border: 2px solid var(--edge); border-bottom-width: 2px; background: var(--card-3); }
-.bar.some { background: var(--sky); }
-.bar.met { background: var(--lime); }
-.bar-v { color: var(--ink-2); font-family: var(--display); font-weight: 800; }
-.bar-col small { color: var(--ink-2); }
-.bar-col small.today { color: var(--accent-2); }
 .ub-ic { border: 2.5px solid var(--edge); background: color-mix(in srgb, var(--hc) 40%, #fff8f2); }
 .ub-ic .ar { color: var(--ink); }
 .ub-top b { font-family: var(--display); font-size: .88rem; }
@@ -1682,6 +1655,54 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .badge-cell b { font-family: var(--display); font-size: .86rem; }
 .b-ic { border: 2.5px solid var(--edge); background: var(--yellow); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); }
 .card-title h3 { font-size: 1.02rem; }
+/* «Прогресс» с 3.0 (вечер 2026-10-24): два пути наклейками, общий календарь, вкладки «Учёба» и «Коран» */
+.pg-tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: 14px; margin-bottom: 18px; }
+.pg-track { display: grid; justify-items: start; align-content: start; gap: 2px; min-width: 0; padding: 12px 14px 14px; border: 3px solid var(--edge); border-radius: 22px; color: var(--ink); font: inherit; text-align: left; cursor: pointer; box-shadow: var(--shadow); transition: translate .12s var(--ease), box-shadow .12s var(--ease), background .2s; }
+.pg-track.t-study { --tc: var(--lime); rotate: -.8deg; }
+.pg-track.t-quran { --tc: var(--yellow); rotate: .8deg; }
+.pg-track { background: color-mix(in srgb, var(--tc) 38%, var(--card)); }
+.pg-track.on { background: var(--tc); box-shadow: var(--shadow-lg); }
+.pg-track:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
+.pg-tt { display: flex; align-items: center; gap: 6px; font: 800 .78rem/1.2 var(--display); text-transform: uppercase; letter-spacing: .04em; }
+.pg-tr { margin: 6px 0 4px; }
+.pg-track .ring-bg { stroke: color-mix(in srgb, var(--edge) 14%, transparent); }
+.pg-track .ring-fg { stroke: var(--edge); }
+.pg-track .ring-label { font: 800 1rem/1 var(--display); }
+.pg-main { font: 800 1rem/1.25 var(--display); overflow-wrap: anywhere; }
+.pg-sub { font-weight: 700; color: var(--ink-2); overflow-wrap: anywhere; }
+.pg-foot { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; padding: 3px 8px; border: 2px solid var(--edge); border-radius: 10px; background: var(--card); font-size: .78rem; font-weight: 800; }
+.pg-foot .ic { color: #ff7a1a; flex: none; }
+.pg-cal { margin-bottom: 18px; }
+.pg-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .8rem; font-weight: 800; color: var(--ink-2); }
+.pg-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.pg-legend i { width: 14px; height: 14px; }
+.cal { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; margin-top: 6px; container-type: inline-size; }
+.cal-day { display: grid; justify-items: center; gap: 4px; min-width: 0; padding: 4px 0; border-radius: 10px; }
+.cal-day.today { background: var(--card-3); }
+.cal-l, .cal-q { display: block; width: 100%; max-width: 26px; aspect-ratio: 1; border: 2px solid var(--line-2); border-radius: 7px; background: var(--card-2); }
+.cal-l.on { border-color: var(--edge); background: color-mix(in srgb, var(--lime) 40%, var(--card-2)); }
+.cal-l.met { border-color: var(--edge); background: var(--lime); }
+.cal-q.on { border-color: var(--edge); background: var(--yellow); }
+.cal-day small { font-size: .68rem; font-weight: 800; color: var(--ink-3); }
+.cal-day.today small { color: var(--accent-2); }
+@container (max-width: 15em) { .cal-day:nth-last-child(even) small { visibility: hidden; } }
+.pg-sum { margin: 8px 0 0; font-size: .9rem; font-weight: 600; color: var(--ink-2); }
+.pg-sum + .pg-sum { margin-top: 2px; }
+.pg-sum b { color: var(--ink); }
+.pg-tabs { display: flex; width: 100%; margin: 0 0 16px; scroll-margin-top: 12px; }
+.pg-tabs .seg-btn { flex: 1; font: 800 .95rem/1.2 var(--display); }
+.pg-tiles { margin-bottom: 18px; }
+.pg-where { display: grid; gap: 10px; margin-bottom: 18px; }
+.pg-where p { margin: 0; }
+.pg-where { container-type: inline-size; }
+.juz-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
+@container (max-width: 17em) { .juz-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@container (min-width: 36em) { .juz-grid { grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 6px; } .jg { font-size: .8rem; } }
+.jg { display: grid; place-items: center; aspect-ratio: 1; min-width: 0; border: 2px solid var(--edge); border-radius: 8px; background: var(--card-2); color: var(--ink-3); font: 800 .72rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.jg.done { background: var(--lime); color: var(--ink); }
+.jg.cur { background: linear-gradient(90deg, var(--yellow) calc(var(--f) * 100%), var(--card-2) 0); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); }
+.pg-cap { justify-self: center; text-align: center; font-weight: 800; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.pg-legend i { border-radius: 4px; }
 
 /* ---------- 3.0: «Ещё» и «Настройки» ---------- */
 .more-hero { display: flex; align-items: center; gap: 14px; margin: 4px 0 8px; padding: 18px 16px; border: 3px solid var(--edge); border-radius: 24px; background: var(--yellow); color: var(--ink); box-shadow: var(--shadow-lg); text-decoration: none !important; rotate: -.6deg; transition: translate .12s var(--ease), box-shadow .12s var(--ease); }
@@ -1843,6 +1864,9 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .focus-end .btn.ghost { color: var(--on-bg); }
 .focus-end .btn.ghost:hover { color: var(--ink); }
 .focus-menu, .focus-bar, .page-wheel, .pw-tip, .reader-tools { color: var(--ink); }
+/* окна «Суры» и «Выберите чтеца»: выбранная строка жёлтая, как всё, что «где вы сейчас» */
+.sp-list .surah-row.on { border-color: var(--edge); background: var(--yellow); }
+.rec-list .sr-main small { white-space: normal; } /* подпись чтеца не обрезается на узком экране */
 .focus-menu { border: 3px solid var(--edge); background: var(--card); box-shadow: var(--shadow-lg); backdrop-filter: none; -webkit-backdrop-filter: none; }
 .fm-info { color: var(--ink-2); font-family: var(--display); font-weight: 700; }
 .fm-tile { border: 2px solid var(--edge); border-radius: 13px; background: var(--card-2); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); transition: translate .1s, box-shadow .1s; }

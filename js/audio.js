@@ -1,5 +1,5 @@
 // Звук: записи чтецов (слова и аяты), звуки ответов (синтез в браузере) и запись своего голоса.
-import { wordAudioUrl, wordKey, RECITERS, loadSurah, husarySpan, husaryUrl } from "./data.js";
+import { wordAudioUrl, wordKey, RECITERS, reciterOf, loadSurah, husarySpan, husaryUrl } from "./data.js";
 import { store } from "./store.js";
 import { track } from "./usage.js";
 import { ROOT } from "./env.js";
@@ -88,7 +88,7 @@ export async function playSpan(s, a, from, to = from, { seg = null, long = false
   return word(from);
 }
 export function playAyah(s, a, o = {}) {
-  const rec = RECITERS[store.get().settings.reciter] || RECITERS.husary;
+  const rec = RECITERS[reciterOf(store.get().settings.reciter)];
   return playUrl(rec.url(s, a), { id: `a:${s}:${a}`, rate: store.get().settings.rate || 1, ...o });
 }
 
