@@ -1,0 +1,379 @@
+/* Кино-режим (проба, ветка kino): яркие «наклейки» в духе C4 Street и темы «Фиолет и лайм» органайзера.
+   Просьба автора 2026-10-24: «ярко, красиво, чтобы понравилось детям». Действует только внутри .kino:
+   остальные экраны TanWin не меняются. Описание вида: docs/Брендбук TanWin.md, раздел «Кино-режим». */
+@property --k-bg { syntax: "<color>"; inherits: true; initial-value: #6b3ff0; }
+@property --k-dot { syntax: "<color>"; inherits: true; initial-value: #5a2fd6; }
+
+.kino {
+  --k-violet: #6b3ff0; --k-violet-dot: #5a2fd6;
+  --k-blue: #0c66f0; --k-blue-dot: #0a55cc;
+  --k-pink: #ff5fae; --k-pink-dot: #f04a9c;
+  --k-ink: #130a30; --k-ink-2: #4a3f73; --k-paper: #fff8f2;
+  --k-lime: #c8f53a; --k-yellow: #fad12b; --k-sky: #6fb7f6; --k-red: #ff4d4d; --k-mark: #e8338a;
+  --k-line: 3px solid var(--k-ink);
+  --k-shadow: 6px 6px 0 var(--k-ink); --k-shadow-sm: 4px 4px 0 var(--k-ink);
+  --k-spring: cubic-bezier(.34, 1.56, .64, 1); --k-out: cubic-bezier(.16, 1, .3, 1);
+  --k-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --k-body: "Manrope", "Nunito", system-ui, sans-serif;
+  --k-bg: var(--k-violet); --k-dot: var(--k-violet-dot);
+  position: relative; z-index: 1; min-height: 100dvh; color: var(--k-paper); font-family: var(--k-body);
+  background-color: var(--k-bg);
+  background-image: radial-gradient(var(--k-dot) 2.2px, transparent 2.8px);
+  background-size: 22px 22px;
+  transition: --k-bg .6s var(--k-out), --k-dot .6s var(--k-out);
+}
+.kino[data-tone="blue"] { --k-bg: var(--k-blue); --k-dot: var(--k-blue-dot); }
+.kino[data-tone="pink"] { --k-bg: var(--k-pink); --k-dot: var(--k-pink-dot); }
+.kino :focus-visible { outline: 3px solid var(--k-yellow); outline-offset: 3px; }
+
+/* ---------- Наклейки ---------- */
+.kino .k-st { position: relative; background: var(--k-paper); color: var(--k-ink); border: var(--k-line); border-radius: 22px; box-shadow: var(--k-shadow); rotate: var(--tilt, 0deg); }
+.kino .t-lime { background: var(--k-lime); }
+.kino .t-yellow { background: var(--k-yellow); }
+.kino .t-pink { background: var(--k-pink); }
+.kino .t-sky { background: var(--k-sky); }
+.kino .t-paper { background: var(--k-paper); }
+.kino button.k-st { font: inherit; cursor: pointer; transition: translate .12s var(--k-out), box-shadow .12s var(--k-out); -webkit-tap-highlight-color: transparent; }
+.kino button.k-st:active { translate: 4px 4px; box-shadow: 2px 2px 0 var(--k-ink); }
+.kino .k-hide { opacity: 0; }
+.kino .k-badge { display: inline-flex; align-items: center; padding: 6px 14px; border: var(--k-line); border-radius: 99px; background: var(--k-yellow); color: var(--k-ink); box-shadow: var(--k-shadow-sm); font: 800 1rem/1.15 var(--k-display); rotate: var(--tilt, 0deg); white-space: nowrap; }
+.kino .k-badge.t-lime { background: var(--k-lime); } .kino .k-badge.t-pink { background: var(--k-pink); } .kino .k-badge.t-sky { background: var(--k-sky); }
+.kino .k-ar { display: grid; place-items: center; padding: 0 .4em; }
+.kino button.k-ar { padding: 0 .4em; }
+.kino .k-ar .ar { color: var(--k-ink); line-height: 1.75; }
+.kino .k-cap { display: block; margin: -.5em 0 .55em; font: 800 .8rem/1.15 var(--k-body); color: var(--k-ink); text-align: center; }
+.kino .k-call { animation: kCall 1.25s ease-in-out infinite; }
+@keyframes kCall {
+  0%, 100% { box-shadow: var(--k-shadow), 0 0 0 0 rgba(200, 245, 58, 0); }
+  50% { box-shadow: var(--k-shadow), 0 0 0 9px rgba(200, 245, 58, .85); }
+}
+
+/* ---------- Фильм ---------- */
+.kf { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 14px; width: min(100%, 760px); margin: 0 auto; }
+/* фильм занимает ровно экран под верхней полосой: сцена получает остаток высоты, кадр в неё вписывается (fit в engine.js) */
+.kf.ls, .kf.pr { flex: 1; min-height: 0; padding: 2px 0 calc(14px + env(safe-area-inset-bottom)); }
+.lesson.kino:has(.lp-content.film) { height: 100dvh; min-height: 0; }
+.lesson.kino .lp-stage:has(.lp-content.film) { display: flex; flex-direction: column; min-height: 0; padding-bottom: 0; }
+.lesson.kino .lp-content.film { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.onboard.ob-kino.at-film { height: 100dvh; min-height: 0; padding-bottom: 0; }
+.ob-kino .ob-screen.ob-film { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.kf-bar { display: flex; gap: 5px; }
+.kf-bar i { flex: 1; height: 9px; border-radius: 99px; background: rgba(255, 248, 242, .3); border: 2px solid var(--k-ink); transition: background-color .3s; }
+.kf-bar i.done { background: var(--k-lime); }
+.kf-bar i.now { background: var(--k-yellow); animation: kBarNow .5s var(--k-spring); }
+@keyframes kBarNow { from { transform: scaleY(.4); } }
+.kf-stage { position: relative; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; min-height: 0; overflow: visible; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.kf-shot { grid-area: 1 / 1; display: grid; place-items: center; width: 100%; height: 100%; padding: 18px 6px 10px; }
+
+.kf-shot.in { animation: kShotIn .6s var(--k-out) both; }
+.kf-shot.out { animation: kShotOut .42s var(--k-out) both; pointer-events: none; }
+@keyframes kShotIn { from { opacity: 0; transform: translateX(46px) rotate(2deg) scale(.96); } }
+@keyframes kShotOut { to { opacity: 0; transform: translateX(-70px) rotate(-3deg) scale(.94); } }
+.kf-cap { display: grid; align-items: end; min-height: 92px; }
+.kf-cap-in { position: relative; background: var(--k-paper); color: var(--k-ink); border: var(--k-line); border-radius: 22px; box-shadow: var(--k-shadow); padding: 15px 18px 16px; rotate: -.8deg; animation: kCapIn .45s var(--k-spring) both; }
+.kf-cap-in.turn { background: var(--k-yellow); rotate: .8deg; padding-top: 20px; }
+@keyframes kCapIn { from { opacity: 0; transform: translateY(18px) scale(.94); } }
+.kf-say { margin: 0; font: 800 clamp(1.1rem, 1rem + .7vw, 1.4rem)/1.4 var(--k-body); text-wrap: pretty; }
+.kf-say .kw { display: inline-block; animation: kWord .44s var(--k-spring) both; animation-delay: calc(var(--i) * 42ms + 80ms); }
+@keyframes kWord { from { opacity: 0; transform: translateY(12px) scale(.75) rotate(-5deg); } }
+.kf-say .kw-hl { font-weight: 800; background: linear-gradient(transparent 50%, var(--k-yellow) 50%, var(--k-yellow) 94%, transparent 94%); border-radius: 3px; padding: 0 .08em; }
+.kf-cap-in.turn .kw-hl { background: linear-gradient(transparent 50%, var(--k-paper) 50%, var(--k-paper) 94%, transparent 94%); }
+.kf-say .ar.inline { --s: 1.3em; line-height: 1.5; color: var(--k-ink); } /* арабская вставка не раздвигает строки субтитра */
+.kf-turn { position: absolute; top: -17px; left: 16px; padding: 4px 12px; border: var(--k-line); border-radius: 99px; background: var(--k-pink); color: var(--k-ink); font: 800 .78rem/1.2 var(--k-display); text-transform: uppercase; letter-spacing: .05em; rotate: -4deg; box-shadow: 3px 3px 0 var(--k-ink); }
+.kf-ctrl { display: flex; align-items: center; gap: 10px; }
+.kf-ic { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border: var(--k-line); border-radius: 18px; background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); cursor: pointer; transition: translate .12s var(--k-out), box-shadow .12s var(--k-out); }
+.kf-ic:active:not(:disabled) { translate: 4px 4px; box-shadow: 0 0 0 var(--k-ink); }
+.kf-ic:disabled { opacity: .4; cursor: default; }
+.kf-next { flex: 1; min-width: 0; min-height: 60px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border: var(--k-line); border-radius: 18px; background: var(--k-lime); color: var(--k-ink); box-shadow: var(--k-shadow); font: 800 clamp(1rem, .9rem + .5vw, 1.2rem)/1 var(--k-display); cursor: pointer; transition: translate .12s var(--k-out), box-shadow .12s var(--k-out); }
+.kf-next:active { translate: 6px 6px; box-shadow: 0 0 0 var(--k-ink); }
+.kf-next.ready { animation: kReady .6s var(--k-spring); }
+@keyframes kReady { from { transform: scale(.6) rotate(-6deg); } }
+.kf-skip { display: none; flex: 1; min-height: 56px; border: 0; background: none; color: var(--k-paper); font: 800 1rem var(--k-display); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.kf.gated .kf-next { display: none; }
+.kf.gated .kf-skip { display: block; }
+
+/* ---------- Части картинок ---------- */
+.kino .k-part { transform-box: fill-box; transform-origin: center; }
+.kino .k-boat { display: block; width: 100%; height: auto; overflow: visible; }
+.kino .kb-body { fill: none; stroke: var(--k-ink); stroke-width: 21; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.kino .kb-shade { fill: none; stroke: rgba(19, 10, 48, .13); stroke-width: 21; stroke-linecap: round; opacity: 0; }
+.kino .k-boat.drawn .kb-body { stroke-dashoffset: 0; }
+.kino .k-boat.drawn .kb-shade { opacity: 1; }
+.kino .kb-dot { fill: var(--k-ink); }
+.kino .kb-mark { fill: none; stroke: var(--k-mark); stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.kino .k-boat-wrap { position: relative; }
+.kino .k-boat-card { width: min(74vw, 330px, 40dvh); padding: 4px 8px; }
+.kino .k-name { position: absolute; top: -16px; right: -12px; font-size: 1.4rem; padding: 6px 16px; }
+.kino .k-hint { position: absolute; bottom: -12px; left: -10px; }
+.kino .k-eq { font: 800 1rem/1.2 var(--k-display); color: var(--k-paper); text-shadow: 2px 2px 0 var(--k-ink); }
+.kino .k-arrow svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kino .k-arrow path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.kino .ka-o { stroke: var(--k-ink); stroke-width: 30; }
+.kino .ka-f { stroke: var(--k-lime); stroke-width: 18; }
+.kino .ka-shaft { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.kino .ka-shade { opacity: 0; } .kino .ka-shade path { stroke: rgba(19, 10, 48, .35); stroke-width: 30; }
+.kino .ka-head { opacity: 0; }
+.kino .k-timer { position: relative; width: 100%; height: 100%; }
+.kino .k-timer svg { width: 100%; height: 100%; display: block; }
+.kino .kt-bg { fill: none; stroke: rgba(19, 10, 48, .12); stroke-width: 12; }
+.kino .kt-ring { fill: none; stroke: var(--k-violet); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.kino .kt-txt { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; color: var(--k-ink); }
+.kino .kt-txt b { font: 800 2.3rem/1 var(--k-display); }
+.kino .kt-txt small { font-weight: 800; }
+.kino .k-sparks { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.kino .k-spark { position: absolute; width: 16px; height: 16px; margin: -8px; border-radius: 4px; background: var(--c); border: 2.5px solid var(--k-ink); opacity: 0; }
+.kino .k-sparks.go .k-spark { animation: kSpark .95s var(--k-out) both; }
+@keyframes kSpark {
+  0% { opacity: 1; transform: rotate(var(--a)) translateX(30px) scale(.3) rotate(45deg); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(calc(var(--d) + 40px)) scale(1) rotate(45deg); }
+}
+
+/* ---------- Пролог ---------- */
+.pr-hello { display: grid; justify-items: center; gap: 20px; text-align: center; }
+.pr-logo-wrap { position: relative; display: grid; place-items: center; }
+.kino .pr-logo { display: grid; place-items: center; padding: 16px; border-radius: 36px; }
+.kino .k-title { font: 800 clamp(2.6rem, 2rem + 4vw, 4.4rem)/1 var(--k-display); color: var(--k-paper); letter-spacing: -.02em; -webkit-text-stroke: 3px var(--k-ink); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--k-ink); }
+.pr-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.pr-ayah { display: grid; justify-items: center; gap: 22px; }
+.kino .k-ayah { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 12px; max-width: 640px; direction: rtl; }
+.kino .k-word { padding: 0 14px; transition: background-color .2s, scale .3s var(--k-spring); }
+.kino .k-word .ar { --s: clamp(2.2rem, 1.4rem + 4vw, 3.3rem); color: var(--k-ink); line-height: 1.85; }
+.kino .k-word.lit { background: var(--k-lime); scale: 1.1; }
+.kino .k-word.ok { background: var(--k-lime); }
+.kino .k-ok { position: absolute; top: -13px; left: -11px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--k-ink); color: var(--k-lime); opacity: 0; }
+.kino .k-word.ok .k-ok { opacity: 1; }
+.pr-letters { display: grid; justify-items: center; gap: 16px; }
+.pr-top { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.kino .k-counter { display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 18px 6px; }
+.kino .k-num { min-width: 2ch; text-align: right; font: 800 clamp(2.4rem, 1.8rem + 3vw, 3.6rem)/1 var(--k-display); }
+.kino .k-counter small { font: 800 1.05rem var(--k-display); }
+.pr-marks, .k-marks { display: flex; gap: 10px; }
+.kino .k-mark { width: 3.6rem; height: 3.6rem; padding: 0; border-radius: 18px; }
+.kino .k-mark .ar { line-height: 1.4; }
+.kino .k-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; width: min(100%, 470px); direction: rtl; }
+.kino .k-tile { aspect-ratio: 1; padding: 0; border-width: 2.5px; border-radius: 14px; box-shadow: 3px 3px 0 var(--k-ink); }
+.kino .k-tile .ar { --s: clamp(1.25rem, .8rem + 2.6vw, 1.9rem); line-height: 1.5; }
+.pr-dots { display: grid; justify-items: center; gap: 26px; }
+.kino .k-row3 { display: flex; gap: 14px; justify-content: center; direction: rtl; }
+.kino .k-row3 .k-ar { min-width: 4.4rem; }
+.kino .k-path { position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: clamp(26px, 4.6dvh, 40px); column-gap: 16px; width: min(100%, 440px); }
+.kino .k-path-line { position: absolute; left: 50%; top: 20px; bottom: 30px; margin-left: -2px; border-left: 4px dashed var(--k-paper); transform-origin: top; }
+.kino .k-stop { position: relative; z-index: 1; grid-row: var(--row) / span 2; align-self: center; display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border: var(--k-line); border-radius: 18px; background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); rotate: var(--tilt, 0deg); }
+.kino .k-stop.r { grid-column: 2; justify-self: start; }
+.kino .k-stop.l { grid-column: 1; justify-self: end; }
+.kino .k-stop b { font: 800 .82rem/1.1 var(--k-display); white-space: nowrap; }
+.kino .k-stop-n { position: absolute; top: -11px; left: -9px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--k-ink); color: var(--k-paper); font: 800 .72rem var(--k-display); }
+.kino .k-stop-g { width: 2.6rem; height: 2.6rem; padding: 0; border-width: 2.5px; border-radius: 13px; box-shadow: none; rotate: 0deg; }
+.kino .k-stop-g .ar { line-height: 1.3; }
+.kino .k-goal { grid-column: 1 / -1; justify-self: center; gap: 10px; padding: 8px 18px; background: var(--k-yellow); }
+.kino .k-goal b { font-size: 1rem; }
+.pr-how { display: grid; justify-items: center; gap: 26px; }
+.pr-how-top { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.kino .k-clock { width: 136px; height: 136px; padding: 8px; border-radius: 50%; }
+.kino .k-plus { display: grid; justify-items: center; gap: 2px; max-width: 170px; padding: 12px 16px; text-align: center; }
+.kino .k-plus b { font: 800 2.1rem/1 var(--k-display); }
+.kino .k-plus small, .kino .k-who small { font-weight: 700; line-height: 1.25; color: var(--k-ink-2); }
+.pr-who { position: relative; display: flex; justify-content: center; gap: 16px; }
+.kino .k-who { display: grid; justify-items: center; align-content: start; gap: 6px; width: 170px; padding: 14px 14px 16px; text-align: center; }
+.kino .k-who b { font: 800 1rem/1.15 var(--k-body); }
+.kino .k-free { position: absolute; top: -20px; right: 2%; font-size: 1.1rem; }
+
+/* ---------- Урок: сцены ---------- */
+.ls-meet, .ls-vow, .ls-join, .ls-forms { display: grid; justify-items: center; gap: 22px; }
+.ls-real { display: flex; align-items: center; gap: 12px; }
+.ls-need { display: grid; justify-items: center; gap: 22px; width: min(100%, 460px); }
+.kino .k-lang { padding: 14px 22px; font: 800 clamp(1.05rem, .95rem + .6vw, 1.3rem)/1.2 var(--k-display); }
+.kino .k-strike-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.kino .k-strike { fill: none; stroke: var(--k-red); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; vector-effect: non-scaling-stroke; }
+.kino .k-need-list { display: grid; gap: 14px; width: 100%; }
+.kino .k-need { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font: 800 1.02rem/1.2 var(--k-display); }
+.kino .k-need .ic { flex: none; width: 32px; height: 32px; padding: 5px; border-radius: 50%; background: var(--k-ink); color: var(--k-lime); }
+.ls-rtl { display: grid; justify-items: center; gap: 30px; width: min(100%, 660px); }
+.kino .k-arrow-wrap { position: relative; width: min(84vw, 500px); }
+.kino .k-start { position: absolute; right: -4px; top: -30px; }
+.kino .k-tiles { width: min(100%, 460px); }
+.kino .k-merge { display: grid; place-items: center; }
+.kino .k-merge > * { grid-area: 1 / 1; }
+.kino .k-row3.k-apart { gap: 18px; }
+.kino .k-joined { min-width: 9rem; }
+.kino .k-forms { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; width: min(100%, 520px); direction: rtl; }
+.kino .k-form { padding: 0 2px; }
+.kino .k-form .ar { --s: clamp(2.4rem, 1.4rem + 4vw, 3.4rem); }
+.kino .k-form .k-cap { font-size: .74rem; }
+.ls-how { display: flex; align-items: center; justify-content: center; gap: 18px; }
+
+/* плитки слогов (js/syllables.js) в кино-виде */
+.kino .snd-tile { border: var(--k-line); border-radius: 20px; background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); transition: translate .12s var(--k-out), box-shadow .12s var(--k-out), background-color .2s; }
+.kino .snd-tile:active { transform: none; translate: 4px 4px; box-shadow: 0 0 0 var(--k-ink); }
+.kino .snd-tile .ar, .kino .snd-tile .tr { color: var(--k-ink); }
+.kino .snd-tile .spell { color: var(--k-ink-2); }
+.kino .snd-tile.playing, .kino .snd-tile.now { background: var(--k-lime); border-color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.kino .snd-ico { color: var(--k-ink-2); }
+.kino .snd-tile.v-fatha { --vc: var(--k-mark); } .kino .snd-tile.v-kasra { --vc: #0a55cc; } .kino .snd-tile.v-damma { --vc: var(--k-violet); }
+.kino .snd-tile[class*="v-"] { border-bottom-color: var(--k-ink); }
+
+/* ---------- Знакомство: вопросы после пролога ---------- */
+.onboard.ob-kino { width: 100%; max-width: none; padding-inline: max(16px, calc(50% - 290px)); }
+.ob-kino .ob-top { position: relative; z-index: 2; }
+.ob-kino.at-film .ob-dots { visibility: hidden; }
+.ob-kino .ob-screen.ob-film { padding: 0; animation: none; }
+.ob-kino .ob-dots i { width: 10px; height: 10px; border: 2px solid var(--k-ink); background: rgba(255, 248, 242, .35); }
+.ob-kino .ob-dots i.on { width: 30px; background: var(--k-lime); }
+.ob-kino .skip-btn { color: var(--k-paper); font-weight: 800; }
+.ob-kino .skip-btn:hover { color: var(--k-yellow); }
+.kino .icon-btn { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.kino .icon-btn:hover { background: var(--k-yellow); color: var(--k-ink); }
+.kino .icon-btn:active { translate: 3px 3px; box-shadow: 0 0 0 var(--k-ink); }
+.ob-kino .ob-screen h2 { font: 800 clamp(1.45rem, 1.1rem + 1.5vw, 2rem)/1.18 var(--k-display); color: var(--k-paper); text-shadow: 3px 3px 0 var(--k-ink); }
+.ob-kino .ob-screen .muted, .ob-kino .ob-screen .lead { color: rgba(255, 248, 242, .92); font-weight: 600; }
+.ob-kino .set-label { color: var(--k-paper); font-weight: 800; }
+.ob-kino .text-in { border: var(--k-line); border-radius: 18px; background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.ob-kino .text-in:focus { border-color: var(--k-ink); box-shadow: var(--k-shadow-sm), 0 0 0 4px var(--k-yellow); }
+.ob-kino .seg { border: var(--k-line); background: rgba(19, 10, 48, .3); }
+.ob-kino .seg-btn { min-height: 44px; color: var(--k-paper); }
+.ob-kino .seg-btn.on { background: var(--k-lime); color: var(--k-ink); box-shadow: 2px 2px 0 var(--k-ink); }
+.ob-kino .goal-opt, .ob-kino .start-opt { border: var(--k-line); border-radius: 20px; background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); transition: translate .12s var(--k-out), box-shadow .12s var(--k-out), background-color .2s; }
+.ob-kino .goal-opt:active, .ob-kino .start-opt:active { translate: 4px 4px; box-shadow: 0 0 0 var(--k-ink); }
+.ob-kino .goal-opt.on { background: var(--k-lime); border-color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.ob-kino .goal-opt b, .ob-kino .start-opt b { font-family: var(--k-display); font-weight: 800; font-size: 1rem; }
+.ob-kino .goal-opt small, .ob-kino .goal-opt span, .ob-kino .start-opt small { color: var(--k-ink-2); }
+.ob-kino .start-opt:hover { border-color: var(--k-ink); background: var(--k-yellow); }
+.ob-kino .so-g { border: 2.5px solid var(--k-ink); background: var(--k-yellow); }
+.ob-kino .so-g .ar { color: var(--k-ink); }
+.ob-kino .ob-foot { background: linear-gradient(transparent, var(--k-bg) 35%); }
+.kino .btn.primary { border: var(--k-line); background: var(--k-lime); color: var(--k-ink); box-shadow: var(--k-shadow); font-family: var(--k-display); font-weight: 800; }
+.kino .btn.primary:active { transform: none; translate: 5px 5px; box-shadow: 0 0 0 var(--k-ink); }
+.kino .btn.secondary { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); font-family: var(--k-display); font-weight: 800; }
+.kino .btn.secondary:active { transform: none; translate: 4px 4px; box-shadow: 0 0 0 var(--k-ink); }
+
+/* ---------- Урок: упражнения и итог в кино-виде ---------- */
+.lesson.kino .lp-top { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.lesson.kino .lp-bar { height: 18px; border: var(--k-line); background: rgba(255, 248, 242, .35); box-shadow: none; }
+.lesson.kino .lp-bar-fill { background: var(--k-lime); border-radius: 0 99px 99px 0; }
+.lesson.kino .lp-bar-fill::after { background: rgba(255, 255, 255, .55); }
+.lesson.kino .lp-xp { color: var(--k-paper); text-shadow: 2px 2px 0 var(--k-ink); font-family: var(--k-display); }
+.lesson.kino .skip-btn { color: var(--k-paper); }
+.lesson.kino .lp-stage:has(.lp-content.film) { padding-bottom: 0; }
+.lesson.kino .lp-content.film { animation: none; }
+.lesson.kino .q-text h2 { font: 800 clamp(1.2rem, 1rem + 1vw, 1.6rem)/1.25 var(--k-display); color: var(--k-paper); text-shadow: 3px 3px 0 var(--k-ink); }
+.lesson.kino .q-text p, .lesson.kino .q-center > .muted { color: rgba(255, 248, 242, .92); }
+.lesson.kino .q-play { border: var(--k-line); background: var(--k-sky); color: var(--k-ink); box-shadow: var(--k-shadow); }
+.lesson.kino .q-play:active { transform: none; translate: 5px 5px; box-shadow: 0 0 0 var(--k-ink); }
+.lesson.kino .opt { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); font-family: var(--k-display); }
+.lesson.kino .opt .ar, .lesson.kino .opt .tr { color: var(--k-ink); }
+.lesson.kino .opt:hover:not(:disabled) { border-color: var(--k-ink); background: var(--k-yellow); }
+.lesson.kino .opt:active:not(:disabled) { transform: none; translate: 4px 4px; box-shadow: 0 0 0 var(--k-ink); }
+.lesson.kino .opt.right { border-color: var(--k-ink); background: var(--k-lime); box-shadow: var(--k-shadow-sm); color: var(--k-ink); animation: kRight .5s var(--k-spring); }
+.lesson.kino .opt.right .ar, .lesson.kino .opt.right .tr { color: var(--k-ink); }
+.lesson.kino .opt.wrong { border-color: var(--k-ink); background: var(--k-pink); box-shadow: var(--k-shadow-sm); }
+.lesson.kino .opt:disabled:not(.right):not(.wrong) { opacity: .55; }
+@keyframes kRight { 40% { scale: 1.06; } }
+.lesson.kino .lp-sheet { border-top: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: 0 -6px 0 rgba(19, 10, 48, .25); }
+.lesson.kino .lp-sheet.ok { background: var(--k-lime); border-color: var(--k-ink); }
+.lesson.kino .lp-sheet.bad { background: var(--k-pink); border-color: var(--k-ink); }
+.lesson.kino .sheet-head { font-family: var(--k-display); color: var(--k-ink); }
+.lesson.kino .sheet-head b { font-weight: 800; }
+.lesson.kino .sheet-explain, .lesson.kino .sheet-tutor, .lesson.kino .sheet-right { color: var(--k-ink); }
+.lesson.kino .lp-sheet .btn.primary { background: var(--k-ink); color: var(--k-paper); box-shadow: 4px 4px 0 rgba(19, 10, 48, .35); }
+.lesson.kino .tutor-note { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.lesson.kino .tutor-note .ic, .lesson.kino .guide-more .ic { color: var(--k-violet); }
+.lesson.kino .card { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow); }
+.lesson.kino .card .muted, .lesson.kino .card small { color: var(--k-ink-2); }
+.lesson.kino .lp-actions { background: linear-gradient(transparent, var(--k-bg) 32%); }
+.lesson.kino .result h1 { font: 800 clamp(1.6rem, 1.2rem + 2vw, 2.4rem)/1.15 var(--k-display); color: var(--k-paper); text-shadow: 4px 4px 0 var(--k-ink); }
+.lesson.kino .result > .muted, .lesson.kino .result > .tutor-line, .lesson.kino .result > .small { color: rgba(255, 248, 242, .94); font-weight: 700; }
+.lesson.kino .res-stars span { color: rgba(19, 10, 48, .35); }
+.lesson.kino .res-stars span.on { color: var(--k-yellow); filter: drop-shadow(3px 3px 0 var(--k-ink)); }
+.lesson.kino .stat, .lesson.kino .res-goal { border: var(--k-line); background: var(--k-paper); color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.lesson.kino .stat:nth-child(2) { background: var(--k-yellow); rotate: 1.5deg; }
+.lesson.kino .stat:nth-child(1) { rotate: -1.5deg; } .lesson.kino .stat:nth-child(3) { rotate: -1deg; }
+.lesson.kino .stat .ic { color: var(--k-violet); }
+.lesson.kino .stat b { font-family: var(--k-display); }
+.lesson.kino .stat small, .lesson.kino .res-goal .muted { color: var(--k-ink-2); }
+.lesson.kino .ring-bg { stroke: rgba(19, 10, 48, .14); }
+.lesson.kino .ring-fg { stroke: var(--k-violet); }
+.lesson.kino .after-first { rotate: -1deg; }
+.lesson.kino .after-first .ar { color: var(--k-ink); }
+
+/* ---------- 3.0: внутри наклеек прежние детали (плитки, примеры, аят) рисуются чернилами на светлом при любой теме ---------- */
+.kino .card, .kino .k-st, .kino .lp-sheet {
+  --ink: var(--k-ink); --ink-2: var(--k-ink-2); --ink-3: #6e5f9e;
+  --card: #ffffff; --card-2: #fffdf9; --card-3: #f1ebff; --line: #d9cfee; --line-2: #c4b6e6;
+  --accent: #5b2fe0; --accent-2: #4a22c4; --accent-soft: #ece4ff; --accent-ink: #fff;
+  --gold: #b07a12; --gold-2: #e8b440; --gold-soft: #fff1c9; --gold-text: #8a5b06;
+  --good: #16a765; --good-soft: #e3f9c8; --bad: #e0414d; --bad-soft: #ffe1ef; --bg: var(--k-paper);
+  color: var(--ink);
+}
+
+/* ---------- 3.0: фильм из карточки теории (js/kino/cards.js) ---------- */
+.kc { display: grid; justify-items: center; gap: 22px; width: min(100%, 560px); }
+.kc-head { display: grid; justify-items: center; gap: 4px; }
+.kino .kc-kicker { margin-bottom: -10px; position: relative; z-index: 1; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+.kino .kc-title-st { display: flex; align-items: center; gap: 10px; padding: 12px 20px; max-width: 100%; }
+.kino .kc-title { margin: 0; font: 800 clamp(1.2rem, 1rem + 1.2vw, 1.7rem)/1.2 var(--k-display); color: var(--k-ink); text-align: center; overflow-wrap: anywhere; }
+.kino .kc-title .ar { color: var(--k-ink); }
+.kino .kc-icon { font-size: 1.8rem; line-height: 1; }
+.kc-spot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; min-height: 7.5rem; max-width: 100%; direction: rtl; }
+.kino .kc-ar { max-width: 100%; }
+.kino .kc-ar .ar { line-height: 1.8; }
+.kino .kc-word { font-size: 1.05rem; padding: 8px 16px; white-space: normal; text-align: center; direction: ltr; }
+.kino .kc-line { padding: 4px 18px; max-width: 100%; }
+.kino .kc-line .ar { white-space: normal; text-align: center; }
+.kino .kc-big { max-width: 100%; padding: 4px 22px; }
+.kino .kc-big .ar { white-space: normal; text-align: center; }
+.kf-shot.scroll.tall { align-items: start; }
+.kf-shot.scroll { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.kc-show-wrap { display: grid; justify-items: center; gap: 14px; width: min(100%, 680px); padding-bottom: 12px; }
+.kc-head.small .kc-title-st { padding: 8px 16px; }
+.kc-head.small .kc-title { font-size: clamp(1rem, .9rem + .6vw, 1.25rem); }
+.kino .kc-show { width: 100%; padding: 14px; cursor: default; }
+.kino .kc-show .card-extras { margin: 0; }
+.kino .kc-show .card-big, .kino .kc-show .form-cell, .kino .kc-show .st-cell, .kino .kc-show .case, .kino .kc-show .cmp-tile, .kino .kc-show .rw-cell, .kino .kc-show .stop-cell {
+  border: 2.5px solid var(--k-ink); box-shadow: 3px 3px 0 var(--k-ink); background: #fff;
+}
+.kino .kc-show .word-chip, .kino .kc-show .vb-word { border: 2.5px solid var(--k-ink); box-shadow: 3px 3px 0 var(--k-ink); background: #fff; color: var(--k-ink); }
+.kino .kc-show .word-chip:active, .kino .kc-show .vb-word:active { transform: none; translate: 3px 3px; box-shadow: 0 0 0 var(--k-ink); }
+.kino .kc-show .word-chip.playing, .kino .kc-show .vb-word.now { background: var(--k-lime); }
+.kino .kc-show .verse-block { border: 0; background: none; box-shadow: none; padding: 0; gap: 10px; }
+.kino .kc-show .play-btn { border: var(--k-line); background: var(--k-lime); color: var(--k-ink); box-shadow: var(--k-shadow-sm); }
+.kino .kc-show .spell-note { border: 2px dashed var(--k-ink-2); background: #fff; }
+.kino .kc-show .caption { color: var(--k-ink-2); }
+
+/* ---------- 3.0: фильм знакомства с буквой (js/kino/letters.js) ---------- */
+.kl { display: grid; justify-items: center; gap: 22px; }
+.kino .k-letter-card { width: min(64vw, 250px, 34dvh); padding: 4px; }
+.kino .k-glyph { display: block; width: 100%; height: auto; overflow: visible; }
+.kino .kg-text { font-family: "Amiri Quran", serif; font-size: 150px; fill: var(--k-ink); fill-opacity: 1; stroke: var(--k-ink); stroke-width: 2.4; stroke-linejoin: round; stroke-dasharray: 900; stroke-dashoffset: 0; }
+.kino .k-arname { position: absolute; bottom: -14px; right: -14px; padding: 0 12px; border-radius: 16px; }
+.kino .k-arname .ar { --s: 1.7rem; line-height: 1.6; color: var(--k-ink); }
+.kino .k-letter-card ~ .k-hint { bottom: -14px; left: -14px; }
+.kl-row { display: grid; justify-items: center; gap: 14px; width: min(100%, 420px); }
+.kino .k-dots { font-size: .95rem; }
+.kino .k-more { min-height: 44px; padding: 8px 16px; border: 2.5px solid var(--k-ink); border-radius: 99px; background: var(--k-paper); color: var(--k-ink); box-shadow: 3px 3px 0 var(--k-ink); font: 800 .88rem/1.2 var(--k-body); cursor: pointer; }
+.kino .k-more:active { translate: 3px 3px; box-shadow: 0 0 0 var(--k-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-say .kw, .kf-cap-in, .kf-shot.in, .kf-shot.out, .kino .k-call, .kino .k-sparks.go .k-spark { animation-duration: .01s; }
+}
+
+/* ---------- 3.0: фильм «что дальше» перед проверкой знакомства (js/kino/start.js) ---------- */
+.st-check { display: grid; justify-items: center; gap: 26px; }
+.st-card-wrap { position: relative; }
+.kino .st-card { display: grid; justify-items: center; gap: 8px; width: min(78vw, 320px); padding: 26px 20px 22px; text-align: center; }
+.kino .st-trophy { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 22px; background: var(--k-ink); color: var(--k-lime); }
+.kino .st-title { font: 800 clamp(1.2rem, 1rem + 1.2vw, 1.6rem)/1.2 var(--k-display); color: var(--k-ink); }
+.kino .st-sub { font-weight: 700; color: var(--k-ink-2); }
+.kino .st-pct { position: absolute; top: -18px; right: -14px; font-size: 1.5rem; padding: 6px 14px; }
+.kino .st-first { font-size: 1.05rem; }
+.kino .st-path { grid-auto-rows: clamp(24px, 4dvh, 36px); }
+.kino .k-stop.st-done { background: var(--k-lime); }
+.kino .k-stop.st-next { background: var(--k-yellow); }
+.kino .st-tick { position: absolute; top: -10px; right: -8px; display: grid; place-items: center; width: 24px; height: 24px; border: 2.5px solid var(--k-ink); border-radius: 50%; background: var(--k-lime); color: var(--k-ink); }
+.kino .st-here { position: absolute; top: -24px; right: -6px; font-size: .74rem; padding: 3px 10px; }
+.kino .st-path { width: min(100%, 400px); column-gap: 14px; }
+.st-calm { display: grid; justify-items: center; gap: 22px; }
+.st-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.kino .st-opt { display: grid; justify-items: center; gap: 8px; width: 150px; padding: 18px 12px; text-align: center; }
+.kino .st-opt b { font: 800 1rem/1.2 var(--k-display); }
+.onboard.ob-kino { overflow-x: clip; } /* полоса под кнопкой «Дальше» шире экрана на 2 точки: страница не сдвигается вбок */
