@@ -13,6 +13,7 @@ import { feedbackButton } from "../feedback.js";
 import { homeLine, studentName } from "../tutor.js";
 import { NEWS } from "../version.js";
 import { tourWaits, startTour } from "../tour.js";
+import { track, user, whoParams } from "../usage.js";
 
 const hue = (u) => `var(--c-${u.hue})`;
 const unitOfLesson = (id) => UNITS.find((u) => u.lessons.some((l) => l.id === id));
@@ -59,6 +60,57 @@ function continueCard() {
     h("div.hero-main", null, h("div.hero-ar", null, l.test ? icon("trophy", { size: 40, sw: 2.2 }) : ar(nodeGlyph(l, u))),
       h("div.hero-body", null, h("small.hero-next", null, l.test ? "Проверка этапа" : started ? "Следующий урок" : "Первый урок"), h("h2", null, mixed(l.title)), h("p", null, mixed(l.sub)))),
     h("span.btn.primary.big.hero-go", null, started ? "Продолжить" : "Начать", icon("right", { size: 20 })));
+}
+
+// 3.0 (решение автора 2026-10-25): новичок сразу видит «Путь» и меню. Сверху карточка: что есть в приложении,
+// подсказки по экрану по кнопке «Показать, где что» и выбор: знакомство, первый урок или проверка уровня.
+// Раньше знакомство открывалось само, и многие уходили, не увидев приложения. Карточка уходит после выбора.
+const SECTIONS = [
+  ["path", "Путь", "14 этапов по порядку: буквы, огласовки, слова, таджвид, суры"],
+  ["repeat", "Практика", "повторение трудного и тренировки"],
+  ["book", "Мой Коран", "весь Коран с чтецом, закладки и цель чтения"],
+  ["chart", "Прогресс", "дни подряд, пройденные уроки и джузы"],
+  ["more", "Ещё", "алфавит, правила таджвида, связь с автором"],
+  ["gear", "Шестерёнка", "настройки: имя, тема, размер текста, чтец"],
+];
+function welcomeCard() {
+  if (store.get().profile.onboarded) return null;
+  const pick = (choice, path) => {
+    track("first_choice", { Выбор: choice });
+    // знакомство и проверка уровня сами отметят новичка, когда он выберет, с чего начать (и отложат вопросы об имени)
+    if (choice === "первый урок") {
+      store.set((st) => { st.profile.onboarded = true; });
+      try { localStorage.setItem("tanwin.askMe", "1"); } catch {} // имя и цель спросим на итоге первого урока (onboard.js, askLater)
+      track("onboarded", { Старт: "Сразу первый урок", ...whoParams() }); user(whoParams());
+    }
+    go(path);
+  };
+  const opt = (g, t, s, choice, path) => h("button.start-opt", { type: "button", onclick: () => pick(choice, path) }, h("span.so-g", null, typeof g === "string" ? ar(g) : g), h("div", null, h("b", null, t), h("small", null, s)), icon("right"));
+  return h("section.card.welcome-card", null,
+    h("span.hero-kicker", null, "Добро пожаловать"),
+    h("h2", null, "Ассаляму алейкум! Это TanWin"),
+    h("p.wc-lead", null, "Здесь вы научитесь читать Коран: от первой буквы до сур. Бесплатно, по 10 минут в день."),
+    h("ul.wc-list", null, ...SECTIONS.map(([ic, t, s]) => h("li", null, h("span.wc-ic", null, icon(ic, { size: 20, sw: 2.2 })), h("span", null, h("b", null, t), ": ", s)))),
+    h("button.btn.secondary.wide.wc-tour", { type: "button", onclick: () => startTour(pathTour()) }, icon("info", { size: 18 }), "Показать, где что"),
+    h("b.wc-ask", null, "С чего начнём?"),
+    h("div.start-opts", null,
+      opt(icon("play", { size: 26 }), "Начать со знакомства", "Короткий фильм: как устроено письмо и весь путь", "знакомство", "/welcome"),
+      opt("بَ", "Сразу первый урок", "Урок 1.1: как читается Коран", "первый урок", "/learn/1.1"),
+      opt("ٱ", "Я уже учился", "Проверю уровень и продолжу с нужного этапа", "проверка", "/welcome/level")));
+}
+
+/** Подсказки по экрану: где настройки, счётчики, весь курс и что в каждом разделе меню. */
+function pathTour() {
+  const tab = (p) => document.querySelector(`#nav .tab[href="#${p}"]`);
+  return [
+    { el: document.querySelector(".hh-gear"), title: "Настройки", text: "Шестерёнка открывает настройки: имя, обращение на «ты» или «вы», тема, размер текста, шрифт, чтец, звук без интернета." },
+    { el: document.querySelector(".home-stats"), title: "Цель дня, дни подряд и нур", text: "Сколько уроков сделано сегодня, сколько дней вы занимаетесь подряд и сколько нура набрали. Нажмите, и откроется «Прогресс»." },
+    { el: document.querySelector(".home-main .unit.open .unit-head") || document.querySelector(".home-main .unit-head"), title: "Весь курс по шагам", text: "Ниже весь путь: 14 этапов, от первых букв до чтения сур. Нажмите на этап, и вы увидите его уроки. Уроки открываются по порядку." },
+    { el: tab("/review"), fixed: true, title: "Практика", text: "Повторение того, что было трудно, и тренировки: буквы на слух, места выхода звуков, беглое чтение, таджвид." },
+    { el: tab("/quran"), fixed: true, title: "Мой Коран", text: "Весь Коран: суры, джузы и страницы мусхафа. Чтец читает, а слово подсвечивается. Здесь же закладки и цель чтения." },
+    { el: tab("/progress"), fixed: true, title: "Прогресс", text: "Ваши успехи: дни подряд, календарь двух недель, пройденные уроки и прочитанные джузы." },
+    { el: tab("/more"), fixed: true, title: "Ещё", text: "Алфавит, правила таджвида, методика, знакомство с TanWin, связь с автором и установка приложения." },
+  ];
 }
 
 /** Раз в неделю: «сохраните копию прогресса»: на случай очистки данных браузера или смены телефона. */
@@ -252,7 +304,7 @@ export function HomeView() {
           h("p.home-line", null, homeLine()),
           statsBar()),
         updPlaque(),
-        continueCard(),
+        welcomeCard() || continueCard(),
         reviewCard(),
         newsCard(),
         installCard(),
@@ -272,12 +324,8 @@ export function HomeView() {
     const cur = (x && page.querySelector(x.t === "surah" ? `.unit.open .node[data-surah="${x.n}"]` : `.unit.open .node[data-lesson="${x.id}"]`)) || page.querySelector(".unit.open .node.current");
     if (cur && Object.keys(store.get().lessons).length > 2) cur.scrollIntoView({ block: "center", behavior: "instant" in document.documentElement.style ? "instant" : "auto" });
   });
-  // новичок после знакомства: один раз показываем, где урок, где весь курс и что в меню
-  if (tourWaits()) setTimeout(() => page.isConnected && startTour([
-    { el: page.querySelector(".hero-card"), title: "Ваш следующий урок", text: "Нажмите на эту карточку, и урок начнётся. Уроки идут по порядку, один за другим. Первый урок займёт несколько минут." },
-    { el: page.querySelector(".home-main .unit.open .unit-head") || page.querySelector(".home-main .unit-head"), title: "Весь курс по шагам", text: "Ниже весь путь: 14 этапов, от первых букв до чтения сур. Нажмите на этап, и вы увидите его уроки." },
-    { el: document.querySelector("#nav .nav-tabs"), fixed: true, title: "Разделы приложения", text: "«Практика»: повторение трудного. «Мой Коран»: чтение Корана. «Прогресс»: ваши успехи. «Ещё»: настройки, алфавит, таджвид и связь с разработчиком." },
-  ]), 500);
+  // подсказки «где что» по просьбе: кнопка «Где что в приложении» в «Ещё» ставит отметку и открывает «Путь»
+  if (tourWaits()) setTimeout(() => page.isConnected && startTour(pathTour()), 500);
   return page;
 }
 

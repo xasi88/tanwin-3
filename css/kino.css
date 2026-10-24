@@ -433,3 +433,15 @@
 .kino :is(.opt.wrong, .opt.right, .lp-sheet.bad, .lp-sheet.ok, .snd-tile.whole) .tr-heavy { color: var(--c-rose-deep); }
 /* «Пропустить» на розовом такте фильма: чернилами (светлое на розовом читалось плохо) */
 .kino[data-tone="pink"] .skip-btn { color: var(--k-ink); }
+
+/* ---------- 3.0: фильм знакомства на узком экране с самым крупным текстом (320 точек, 2026-10-25) ---------- */
+/* сетка 28 букв: буква не шире своей плитки. Размер буквы задан в разметке (--s), поэтому ограничиваем сам размер шрифта шириной сцены */
+.kino .k-tile .ar { font-size: min(calc(var(--s) * var(--ar-k)), calc(9cqi - 4px)); }
+/* дорога этапов: на узкой сцене этапы встают в один столбец по оси дороги, зигзаг в два столбца не помещался */
+@container (max-width: 21.5rem) {
+  .kino .k-path, .kino .st-path { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; row-gap: 12px; }
+  .kino .k-path .k-stop { grid-row: auto; grid-column: 1; justify-self: center; }
+}
+/* «С преподавателем»: ширина карточки растёт вместе с текстом (сцена потом уменьшается целиком), длинное слово переносится по слогам */
+.kino .k-who { width: 10.6rem; }
+.kino .k-who :is(b, small) { -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word; }

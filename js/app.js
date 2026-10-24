@@ -129,7 +129,8 @@ const routes = [
   [/^\/author$/, () => import("./views/author.js").then((m) => m.AuthorView()), "Послание от разработчика"],
   [/^\/thanks$/, () => import("./views/thanks.js").then((m) => m.ThanksView()), "Благодарности"],
   [/^\/changelog$/, () => import("./views/changelog.js").then((m) => m.ChangelogView()), "Версии"],
-  [/^\/welcome$/, () => import("./views/onboard.js").then((m) => m.Onboarding()), "Знакомство"],
+  // «/welcome/level»: сразу выбор уровня и проверка (кнопка «Я уже учился» на карточке новичка)
+  [/^\/welcome(\/level)?$/, () => import("./views/onboard.js").then((m) => m.Onboarding({ level: location.hash.endsWith("/level") })), "Знакомство"],
 ];
 const FULLSCREEN = /^\/(learn|surah|practice|welcome|read|juz|page|mark)/;
 const STUDY = /^\/(learn|surah|practice|welcome)/;
@@ -140,8 +141,9 @@ async function route() {
   stop();
   store.sync(); // другая вкладка могла что-то записать: новый экран рисуем по свежим данным
   const path = location.hash.replace(/^#/, "") || "/";
-  if (!store.get().profile.onboarded && !path.startsWith("/welcome")) { location.replace("#/welcome"); return; }
-  // банк слов и список сур нужны всем экранам, кроме знакомства: новичок дожидается их, только когда знакомство кончилось
+  // 3.0 (решение автора 2026-10-25): новичок сразу видит «Путь» и меню, знакомство открывается по его выбору (карточка на «Пути»).
+  // Раньше новичка без выбора отправляли в знакомство, и многие уходили, не увидев приложения.
+  // банк слов и список сур нужны всем экранам, кроме знакомства: в нём их не ждём
   if (!dataReady && !path.startsWith("/welcome")) {
     view.replaceChildren(h("div.boot", null, logo(72), h("div.spinner")));
     const ok = await loadData();
@@ -233,8 +235,8 @@ async function start() {
   const fonts = Promise.race([
     Promise.all([document.fonts?.load?.('40px "Amiri Quran"', "بسم"), document.fonts?.load?.(`40px ${AR_FONTS[arFont()].css}`, "بسم")]).catch(() => {}),
     new Promise((ok) => setTimeout(ok, 4000))]);
-  // новичок начинает со знакомства: ему первый экран не ждёт банка слов (около 120 КБ)
-  const loaded = !store.get().profile.onboarded || await loadData();
+  // знакомство не ждёт банка слов (около 120 КБ); «Путь», куда теперь попадает и новичок, ждёт
+  const loaded = location.hash.startsWith("#/welcome") || await loadData();
   await fonts;
   clearTimeout(slow);
   if (!loaded) {

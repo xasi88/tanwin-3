@@ -1822,6 +1822,31 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .hero-card { padding-top: 18px; }
 .hero-kicker { position: relative; top: auto; left: auto; justify-self: start; margin: -36px 0 0 -4px; }
 
+/* карточка новичка на «Пути» (2026-10-25): что есть в приложении, подсказки «где что» и выбор, с чего начать */
+.welcome-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 6px 0 22px; padding: 18px; border-radius: 26px; rotate: -.4deg; }
+/* самый крупный текст на 320 точках: длинные слова («знакомства», «алейкум») переносятся, карточка не шире экрана */
+.welcome-card :is(h2, .wc-lead, .wc-list li > span:last-child, .start-opt b, .start-opt small) { min-width: 0; overflow-wrap: anywhere; }
+.welcome-card :is(h2, .start-opt b) { -webkit-hyphens: auto; hyphens: auto; } /* по слогам только крупные слова, обычный текст переносится по словам */
+.welcome-card .start-opt > div { min-width: 0; }
+.welcome-card h2 { margin: 0; font-size: clamp(1.15rem, 1rem + 1vw, 1.55rem); }
+.wc-lead { margin: 0; color: var(--ink-2); font-weight: 600; }
+.wc-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.wc-list li { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; line-height: 1.35; color: var(--ink-2); }
+.wc-list b { color: var(--ink); }
+.wc-ic { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border: 2.5px solid var(--edge); border-radius: 10px; background: var(--lime); color: var(--ink); }
+.wc-list li:nth-child(3n+2) .wc-ic { background: var(--sky); }
+.wc-list li:nth-child(3n) .wc-ic { background: var(--yellow); }
+.wc-ask { margin-top: 4px; font: 800 1.05rem/1.2 var(--display); }
+.welcome-card .start-opt { padding: 12px 14px; border: 3px solid var(--edge); border-radius: 20px; background: var(--card-2); color: var(--ink); box-shadow: var(--shadow); cursor: pointer; transition: translate .12s var(--ease), box-shadow .12s var(--ease); }
+.welcome-card .start-opt:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
+.welcome-card .start-opt b { font-family: var(--display); font-weight: 800; }
+.welcome-card .so-g { border: 2.5px solid var(--edge); background: var(--yellow); color: var(--ink); }
+.welcome-card .so-g .ar { color: var(--ink); }
+/* итог первого урока у того, кто пропустил знакомство: «Как к вам обращаться?» */
+.profile-ask { display: grid; gap: 10px; width: 100%; max-width: 34em; text-align: left; }
+.profile-ask .pa-h { font: 800 1.1rem/1.2 var(--display); }
+.profile-ask p { margin: 0; }
+
 /* ---------- 3.0: чтение Корана в виде меню (решение автора 2026-10-24, вечер): фон в точку, текст на светлой наклейке,
    название суры: жёлтая наклейка, номер аята: жёлтая звёздочка, как номер суры в списке. Ночью меняются только фон и тени. ---------- */
 .focus { color: var(--ink); background-image: radial-gradient(var(--bg-2) 2.2px, transparent 2.8px); background-size: 22px 22px; }

@@ -8,6 +8,7 @@ import { canFullscreen, wantFullscreen, setFullscreen } from "../fullscreen.js";
 import { APP_VERSION, CHANGELOG, CONTACT } from "../version.js";
 import { feedbackButton, openFeedback } from "../feedback.js";
 import { track, metrikaAvailable } from "../usage.js";
+import { tourLater } from "../tour.js";
 
 function seg(label, options, value, onChange) {
   const box = h("div.seg", { role: "radiogroup", "aria-label": label });
@@ -101,7 +102,10 @@ export function MoreView() {
       link("#/letters", "list", "Алфавит", "28 букв: звуки, формы, махраджи", "t-sky"),
       link("#/rules", "palette", "Правила таджвида", "Цвета мусхафа и примеры из Корана", "t-pink"),
       link("#/bookmarks", "bookmark", "Закладки и цель чтения", "Сохранённые места в Коране", "t-yellow"),
-      link("#/method", "sparkle", "Методика", "Как устроено обучение", "t-mint")),
+      link("#/method", "sparkle", "Методика", "Как устроено обучение", "t-mint"),
+      // 3.0 (2026-10-25): знакомство и подсказки больше не открываются сами, их можно открыть здесь в любой момент
+      link("#/welcome", "play", "Знакомство с TanWin", "Короткий фильм: как устроено письмо и весь путь", "t-lime"),
+      h("button.more-link.t-sky", { type: "button", onclick: () => { tourLater(); go("/"); } }, h("span.ml-ic", null, icon("info", { size: 22, sw: 2.2 })), h("div", null, h("b", null, "Где что в приложении"), h("small.muted", null, "Подсказки на «Пути»: меню, настройки, этапы")), icon("right", { size: 18, sw: 2.6 }))),
     h("h2.sec-label", null, "О TanWin"),
     h("div.more-links", null,
       link("#/author", "chat", "Послание от разработчика", "Как и зачем появился TanWin", "t-violet"),

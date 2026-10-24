@@ -574,6 +574,7 @@ export async function playLesson(root, { id, title, steps, isTest = false, onExi
       weakText ? h("p.tutor-weak", null, icon("target", { size: 18 }), h("span", null, mixed(voice.weakNote(weakText)))) : null,
       show,
       passed && id === "1.1" ? afterFirstLesson() : null,
+      passed && id ? profileSlot() : null,
       h("p.muted", null, passed ? (isTest && id ? `Проверка сдана. Пройденное засчитано. Дальше: ${afterTest(id).nextText}.` : isTest ? "Проверка сдана." : "Новые знания уже в «Практике».") : "Для проверки нужно 80% верных ответов с первой попытки. Повторите и попробуйте снова: вы справитесь."),
       !passed && isTest && id ? easierTest(id, { fromWelcome, events }) : null,
       h("div.res-stats", null,
@@ -644,6 +645,16 @@ function easierTest(id, { fromWelcome, events }) {
 
 // ---------- После первого урока ----------
 // Что дальше и предложение поставить значок: одна карточка на итоге урока 1.1, без напоминаний.
+/** Новичок пропустил вопросы знакомства (имя, «вы» или «ты», цель): просим ответить здесь, на итоге первого сданного урока. */
+function profileSlot() {
+  let waits = false;
+  try { waits = localStorage.getItem("tanwin.askMe") === "1"; } catch {}
+  if (!waits) return null;
+  const slot = h("div.pa-slot");
+  import("./views/onboard.js").then((m) => slot.replaceChildren(m.profileAsk())).catch(() => slot.remove());
+  return slot;
+}
+
 function afterFirstLesson() {
   let hidden = false;
   try { hidden = !!localStorage.getItem("tanwin.installHint"); } catch {}
