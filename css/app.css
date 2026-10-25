@@ -513,7 +513,9 @@ body.fullscreen #toast { bottom: 24px; }
 
 /* карточка буквы */
 .letter-card { display: grid; gap: 12px; }
-.lc-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; }
+/* название и звук рядом с картинкой буквы; не влезают (320 точек, самый крупный текст): уходят под неё (разбор 2026-10-25) */
+.lc-top { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+.lc-info { flex: 1 1 150px; min-width: 0; }
 .lc-glyph { width: 132px; height: 132px; border-radius: 30px; background: radial-gradient(circle at 30% 25%, var(--card), var(--card-3)); border: 1px solid var(--line); display: grid; place-items: center; }
 .glyph-draw { width: 128px; height: 128px; overflow: visible; }
 .gd-text { font-family: "Amiri Quran", serif; font-size: 120px; fill: var(--ink); fill-opacity: 0; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 700; stroke-dashoffset: 700; animation: draw 1.8s var(--ease) forwards, fillIn .7s 1.3s forwards; }
