@@ -131,8 +131,9 @@ export function film({ shots, onDone, doneLabel = "Дальше", cls = "" }) {
     const w = Math.max(c.offsetWidth, c.scrollWidth), hgt = Math.max(c.offsetHeight, c.scrollHeight);
     const kw = (stage.clientWidth - 12) / (w + 8), kh = (stage.clientHeight - 36) / (hgt + 24);
     let k = Math.min(1.3, kw, kh);
-    // низкая сцена (крупный текст на маленьком экране): картинка не мельчит, а прокручивается пальцем в своём месте
-    const squeeze = kh < 0.6 && kh < kw;
+    // низкая сцена (крупный текст на маленьком экране): картинка не мельчит, а прокручивается пальцем в своём месте;
+    // кадр с классом whole (нарисованный телефон: нужная кнопка внизу) всегда виден целиком
+    const squeeze = kh < 0.6 && kh < kw && !layer.classList.contains("whole");
     layer.classList.toggle("squeezed", squeeze);
     if (squeeze) k = Math.min(1.3, kw, 0.6);
     if (Math.abs(k - 1) > 0.01) c.style.scale = Math.max(0.4, k).toFixed(3);

@@ -67,18 +67,9 @@ function renderNav(active) {
 }
 export async function installApp() {
   if (canPrompt()) { if (await install()) toast("TanWin установлен. Ищите его на рабочем столе ✓"); }
-  else if (isIOS() && Object.values(store.get().lessons).some((x) => x.done)) iosInstallBox();
+  // iPhone и iPad: окна установки нет, фильм показывает, куда нажать (js/kino/install.js). На живом iPhone не проверено.
+  else if (isIOS()) (await import("./kino/install.js")).showInstallFilm();
   else toast(manualHint(), 6000);
-}
-/** iPhone: установленное приложение хранит данные отдельно от Safari, поэтому прогресс переносится файлом. На живом iPhone не проверено. */
-function iosInstallBox() {
-  modal((close) => h("div.confirm.ios-install", null,
-    h("h3", null, "Как установить на iPhone"),
-    h("ol", null,
-      h("li", null, "Сохраните копию прогресса: «Ещё» → «Настройки» → «Сохранить прогресс»."),
-      h("li", null, "В Safari нажмите «Поделиться» и выберите «На экран „Домой“»."),
-      h("li", null, "Откройте TanWin с экрана «Домой» и загрузите копию: «Ещё» → «Настройки» → «Загрузить».")),
-    h("button.btn.primary.wide", { type: "button", onclick: () => close() }, "Понятно")));
 }
 /** Браузер не сохраняет прогресс: говорим один раз за запуск. */
 function storageWarning() {
