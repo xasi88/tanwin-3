@@ -1,5 +1,5 @@
 // Service worker TanWin: офлайн-режим. Список файлов и версия обновляются командой: node tools/build.mjs
-const VERSION = "2054a4c4ed";
+const VERSION = "2ad4b0221b";
 const CORE = `tanwin-core-${VERSION}`;
 const AUDIO = "tanwin-audio";
 const SOUND = "tanwin-sound"; // звук этапов, скачанный заранее (js/sound.js): сам не удаляется

@@ -154,6 +154,13 @@ export function SettingsView() {
     if (!(await confirmBox("Вернуть прогресс как было?", `Вернётся прогресс до загрузки файла ${dateRu(undo.at)}. Всё, что сделано после загрузки, пропадёт.`, "Вернуть", "Отмена"))) return;
     try { store.undoImport(); toast("Прогресс возвращён ✓"); go("/"); } catch (e) { toast("Не удалось вернуть: " + e.message); }
   };
+  // запись прогресса не прочиталась при запуске: её копия ждёт здесь, пока человек не сохранит её в файл или не удалит
+  const broken = store.brokenInfo();
+  const brokenRow = broken ? h("div.set-row.undo-row.broken-row", null,
+    h("div", null, h("span.set-label", null, "Повреждённая запись прогресса"), h("small.muted", null, `Отложена ${dateRu(broken.at)}. Сохраните файл и напишите автору: по нему прогресс можно восстановить`)),
+    h("div.row.gap", null,
+      h("button.btn.secondary", { type: "button", onclick: saveBrokenFile }, icon("down", { size: 18 }), "Сохранить файл"),
+      h("button.btn.ghost", { type: "button", onclick: async () => { if (await confirmBox("Удалить повреждённую запись?", "Восстановить прогресс по ней будет нельзя.", "Удалить", "Отмена")) { store.dropBroken(); brokenRow.remove(); } } }, icon("trash", { size: 18 }), "Удалить"))) : null;
   const group = (tone, ic, title, ...kids) => h("section.card.settings", { class: tone }, h("h3.set-h", null, h("span.set-ic", null, icon(ic, { size: 20, sw: 2.2 })), title), ...kids);
 
   return h("div.page.settings-page", null,
@@ -191,6 +198,7 @@ export function SettingsView() {
         h("button.btn.secondary", { type: "button", onclick: saveProgressFile }, icon("down", { size: 18 }), "Сохранить прогресс"),
         h("button.btn.secondary", { type: "button", onclick: () => fileIn.click() }, icon("up", { size: 18 }), "Загрузить"), fileIn),
       undo ? h("div.set-row.undo-row", null, h("div", null, h("span.set-label", null, "Загрузили не тот файл?"), h("small.muted", null, `Прогресс до загрузки файла ${dateRu(undo.at)}`)), h("button.btn.secondary", { type: "button", onclick: undoImport }, icon("repeat", { size: 18 }), "Вернуть как было")) : null,
+      brokenRow,
       metrikaAvailable() ? h("div.set-sep", null, toggle("Анонимная статистика", "analytics", "Показывает автору, сколько людей учится и где трудно. Через Яндекс.Метрику и PostHog уходят открытые экраны, пройденные уроки и то, кто учится: ученик или ученица. Имя не передаётся.")) : null,
       h("a.link", { href: "privacy/" }, "Конфиденциальность: что хранится и что передаётся"),
       h("div.set-sep", null,
@@ -203,20 +211,30 @@ export function SettingsView() {
 const lessonsWord = (n) => plural(n, "урок", "урока", "уроков");
 /** «21 октября» или «21 октября 2026». */
 const dateRu = (t, year = false) => new Date(t).toLocaleDateString("ru-RU", { day: "numeric", month: "long", ...(year ? { year: "numeric" } : {}) }).replace(/\s*г\.$/, "");
-/** Сохраняет прогресс в файл: на телефоне, через «Поделиться» (в «Файлы», мессенджер, почту), на компьютере, загрузкой. */
-export async function saveProgressFile() {
-  const name = `tanwin-progress-${new Date().toISOString().slice(0, 10)}.json`;
-  const text = store.export();
+/** Сохраняет текст в файл: на телефоне, через «Поделиться» (в «Файлы», мессенджер, почту), на компьютере, загрузкой. Возвращает "shared", "downloaded" или null, если человек закрыл «Поделиться». */
+async function saveTextFile(name, text, title) {
   const file = typeof File === "function" ? new File([text], name, { type: "application/json" }) : null;
   const mobile = matchMedia("(pointer: coarse)").matches;
   if (mobile && file && navigator.canShare?.({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: "Прогресс TanWin" }); backupDone(); track("backup_saved"); toast("Копия прогресса сохранена ✓"); return; }
-    catch (e) { if (e?.name === "AbortError") return; }
+    try { await navigator.share({ files: [file], title }); return "shared"; }
+    catch (e) { if (e?.name === "AbortError") return null; }
   }
   download(name, text);
+  return "downloaded";
+}
+/** Сохраняет прогресс в файл. */
+export async function saveProgressFile() {
+  const how = await saveTextFile(`tanwin-progress-${new Date().toISOString().slice(0, 10)}.json`, store.export(), "Прогресс TanWin");
+  if (!how) return;
   backupDone();
   track("backup_saved");
-  toast("Файл с прогрессом сохранён в «Загрузки» ✓");
+  toast(how === "shared" ? "Копия прогресса сохранена ✓" : "Файл с прогрессом сохранён в «Загрузки» ✓");
+}
+/** Отложенная испорченная запись прогресса в файл: по нему автор может восстановить прогресс. */
+export async function saveBrokenFile() {
+  const b = store.brokenInfo(); if (!b) return;
+  const how = await saveTextFile(`tanwin-broken-${new Date(b.at).toISOString().slice(0, 10)}.json`, b.raw, "Повреждённая запись TanWin");
+  if (how) toast(how === "shared" ? "Копия записи сохранена ✓" : "Файл сохранён в «Загрузки» ✓");
 }
 function download(name, text) {
   const a = h("a", { href: URL.createObjectURL(new Blob([text], { type: "application/json" })), download: name });

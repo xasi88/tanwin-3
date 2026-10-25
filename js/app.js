@@ -87,6 +87,15 @@ function storageWarning() {
     h("p", null, "Браузер не даёт TanWin сохранять данные: запрещено сохранять данные сайтов или память заполнена. Пройденные уроки пропадут, когда вы закроете страницу. Откройте TanWin в обычном окне браузера или освободите место на устройстве."),
     h("button.btn.primary.wide", { type: "button", onclick: () => close() }, "Понятно")));
 }
+/** Запись прогресса не прочиталась: копия отложена (store.js), говорим один раз и предлагаем сохранить её в файл. */
+function brokenWarning() {
+  modal((close) => h("div.confirm", null,
+    h("h3", null, "Прогресс не прочитался"),
+    h("p", null, "Запись прогресса на этом устройстве повреждена: TanWin не смог её прочитать и открывается с нуля. Копия записи отложена. Сохраните её в файл и напишите автору: по файлу прогресс можно восстановить. Копия ждёт в «Ещё» → «Настройки» → «Прогресс и данные»."),
+    h("div.row.end", null,
+      h("button.btn.ghost", { type: "button", onclick: () => close() }, "Позже"),
+      h("button.btn.primary", { type: "button", onclick: async () => { close(); (await import("./views/more.js")).saveBrokenFile(); } }, "Сохранить"))));
+}
 onFullscreenChange(() => renderNav(location.hash.replace(/^#/, "") || "/"));
 
 // Эмблема 3.0: жёлтая звезда-наклейка с открытой книгой (тот же рисунок, что в icons/icon.svg, без фона)
@@ -256,6 +265,7 @@ async function start() {
   // когда есть что беречь: просим браузер не удалять данные приложения
   if (Object.keys(store.get().lessons).length) protectStorage();
   setTimeout(() => onStorageFail(storageWarning), 1500); // после первого экрана, чтобы окно не мигнуло под ним
+  if (store.brokenInfo()?.fresh) setTimeout(brokenWarning, 1500);
 }
 
 // ---------- Статистика посещений (Яндекс.Метрика, анонимно) ----------
