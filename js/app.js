@@ -5,7 +5,7 @@ import { loadBank, loadSurahs } from "./data.js";
 import { stop, onFail } from "./audio.js";
 import { checkBadges, courseProgress, nextTarget, lessonById } from "./path.js";
 import { APP_VERSION } from "./version.js";
-import { canPrompt, install, isInstalled, isStandalone, isIOS, manualHint } from "./install.js";
+import { canPrompt, install, isInstalled, isStandalone, isIOS, manualHint, whereIcon } from "./install.js";
 import { initMetrika, hit, track, whoParams } from "./usage.js";
 import { initFeedback, setScreen } from "./feedback.js";
 import { fill } from "./tutor.js";
@@ -66,7 +66,8 @@ function renderNav(active) {
       h("a.nf-ver", { href: "#/changelog" }, `Версия ${APP_VERSION} · в разработке`)));
 }
 export async function installApp() {
-  if (canPrompt()) { if (await install()) toast("TanWin установлен. Ищите его на рабочем столе ✓"); }
+  if (isInstalled()) toast(`TanWin уже установлен. Откройте его со значка ${whereIcon()}.`, 6000);
+  else if (canPrompt()) { if (await install()) toast("TanWin установлен. Ищите его на рабочем столе ✓"); }
   // iPhone и iPad: окна установки нет, фильм показывает, куда нажать (js/kino/install.js). На живом iPhone не проверено.
   else if (isIOS()) (await import("./kino/install.js")).showInstallFilm();
   else toast(manualHint(), 6000);

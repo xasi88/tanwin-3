@@ -1739,6 +1739,10 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .ml-ic { width: 48px; height: 48px; border: 2.5px solid var(--edge); border-radius: 15px; background: var(--tc, var(--sky)); color: var(--ink); box-shadow: 2px 2px 0 var(--edge); }
 .more-link.install { margin: 0; border: 3px dashed var(--edge); background: var(--card); }
 .more-link.install .ml-ic { background: var(--lime); color: var(--ink); }
+/* приложение уже установлено, а открыт браузер: строка-сведение вместо кнопки, не нажимается */
+.more-link.installed { border-style: solid; cursor: default; }
+.more-link.installed:hover { background: var(--card); }
+.more-link.installed:active { translate: none; box-shadow: var(--shadow); }
 .contact-link { margin: 0; border-color: var(--edge); background: var(--card); }
 .contact-link .ml-ic { background: #25d366; color: #fff; }
 .author-link, .thanks-link { margin: 0; background: var(--card); border-color: var(--edge); }

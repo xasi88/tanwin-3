@@ -8,7 +8,7 @@ import { surahMeta } from "../data.js";
 import { playLesson } from "../lesson.js";
 import { go, celebrate, installApp, updateState, onUpdateState, applyNow, checkUpdate } from "../app.js";
 import { soundRow } from "../sound.js";
-import { isInstalled } from "../install.js";
+import { isInstalled, onInstallChange } from "../install.js";
 import { feedbackButton, openFeedback } from "../feedback.js";
 import { homeLine, studentName } from "../tutor.js";
 import { NEWS } from "../version.js";
@@ -146,6 +146,8 @@ function installCard() {
         h("button.btn.primary.small-btn", { type: "button", onclick: () => { hide(); installApp(); } }, icon("down", { size: 16 }), "Установить"),
         h("button.btn.ghost.small-btn", { type: "button", onclick: hide }, "Не сейчас"))),
     closeX(hide, "Не сейчас"));
+  // браузер ответил позже, что приложение уже стоит: карточку убираем, даже если она ещё не на экране
+  const off = onInstallChange(() => { if (isInstalled()) { card.style.display = "none"; card.remove(); off(); } });
   return card;
 }
 

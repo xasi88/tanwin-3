@@ -3,7 +3,7 @@ import { h, ar, icon, toast, confirmBox, plural, SIZES, AR_FONTS, arFont, keep }
 import { store, backupDone } from "../store.js";
 import { RECITERS, reciterOf } from "../data.js";
 import { go, installApp, checkUpdate } from "../app.js";
-import { isInstalled, onInstallChange } from "../install.js";
+import { isInstalled, isStandalone, onInstallChange, whereIcon } from "../install.js";
 import { canFullscreen, wantFullscreen, setFullscreen } from "../fullscreen.js";
 import { APP_VERSION, CHANGELOG, CONTACT } from "../version.js";
 import { feedbackButton, openFeedback } from "../feedback.js";
@@ -82,11 +82,16 @@ function fullscreenToggle() {
 
 /** Строка раздела «Ещё»: значок в цветном квадрате, название, пояснение, стрелка. */
 const link = (href, ic, t, sub, tone = "") => h("a.more-link", { href, class: tone }, h("span.ml-ic", null, icon(ic, { size: 22, sw: 2.2 })), h("div", null, h("b", null, t), h("small.muted", null, sub)), icon("right", { size: 18, sw: 2.6 }));
-/** «Установить приложение»: кнопка есть, пока приложение не установлено, и исчезает сразу после установки. */
+/**
+ * «Установить приложение»: кнопка есть, пока приложение не установлено. Установлено, а открыт браузер:
+ * вместо кнопки строка, где искать значок. В самом приложении строки нет.
+ */
+const installedRow = () => h("div.more-link.install.installed", null, h("span.ml-ic", null, icon("check", { size: 22, sw: 2.6 })), h("div", null, h("b", null, "Приложение установлено"), h("small.muted", null, `Откройте TanWin со значка ${whereIcon()}`)));
 function installLink() {
-  if (isInstalled()) return null;
+  if (isStandalone()) return null;
+  if (isInstalled()) return installedRow();
   const b = h("button.more-link.install.t-lime", { type: "button", onclick: installApp }, h("span.ml-ic", null, icon("down", { size: 22, sw: 2.2 })), h("div", null, h("b", null, "Установить приложение"), h("small.muted", null, "Значок на экране телефона. Работает и без интернета")), icon("right", { size: 18, sw: 2.6 }));
-  const off = onInstallChange(() => { if (!b.isConnected) off(); else if (isInstalled()) { b.remove(); off(); } });
+  const off = onInstallChange(() => { if (!b.isConnected) off(); else if (isInstalled()) { b.replaceWith(installedRow()); off(); } });
   return b;
 }
 
