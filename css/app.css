@@ -985,6 +985,17 @@ a.drill:hover { transform: translateY(-2px); border-color: var(--accent); }
 .version.latest { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 .v-head { display: flex; align-items: center; gap: 12px; }
 .v-head > div { display: grid; flex: 1; min-width: 0; overflow-wrap: anywhere; } /* длинное слово в названии версии при самом крупном тексте переносится, а не раздвигает страницу */
+.version summary.v-head { cursor: pointer; list-style: none; -webkit-user-select: none; user-select: none; }
+.version summary.v-head::-webkit-details-marker { display: none; }
+.v-head > .ic { flex: none; color: var(--ink-2); transition: transform .2s var(--ease); transform: rotate(-90deg); }
+.version details[open] > .v-head > .ic { transform: none; }
+/* на телефоне номер, «текущая» и стрелка в одну строку, название под ними во всю ширину: иначе оно сжимается в столбик */
+.versions { container-type: inline-size; }
+@container (max-width: 26rem) {
+  .version summary.v-head { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px 10px; }
+  .version summary.v-head > div { grid-column: 1 / -1; grid-row: 2; }
+  .version summary.v-head > .ic { grid-column: 3; grid-row: 1; justify-self: end; }
+}
 .v-num { font-weight: 950; font-size: .95rem; padding: 6px 10px; border-radius: 10px; background: var(--card-3); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .version.latest .v-num { background: var(--accent); color: var(--accent-ink); }
 .v-cur { font-size: .75rem; font-weight: 850; padding: 3px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-2); }
@@ -1361,6 +1372,8 @@ body:has(.focus) .fb-tab::before, body:has(.sura-scrub) .fb-tab::before { inset:
 .news-h { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
 .news-h .ic { color: var(--gold-text); }
 .news-sign { text-align: right; font-weight: 800; color: var(--ink-2); }
+.news-list { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.news-vote { display: grid; gap: 8px; padding: 10px 0; border-block: 2.5px dashed var(--line-2); }
 
 /* ---------- Мой Коран (views/quran.js): последнее место, 30 джузов, все суры ---------- */
 .mq-h { margin: 22px 0 0; font-size: 1.15rem; }

@@ -9,7 +9,7 @@ import { playLesson } from "../lesson.js";
 import { go, celebrate, installApp, updateState, onUpdateState, applyNow, checkUpdate } from "../app.js";
 import { soundRow } from "../sound.js";
 import { isInstalled } from "../install.js";
-import { feedbackButton } from "../feedback.js";
+import { feedbackButton, openFeedback } from "../feedback.js";
 import { homeLine, studentName } from "../tutor.js";
 import { NEWS } from "../version.js";
 import { tourWaits, startTour } from "../tour.js";
@@ -151,23 +151,42 @@ function installCard() {
 
 /**
  * Письмо разработчика «Что нового»: один раз после обновления, тем, кто начал заниматься до него.
- * Закрыли или перешли к списку изменений: больше не показывается.
+ * Закрыли, перешли к списку изменений или к подсказкам «где что»: больше не показывается.
+ * Письмо 3.0 называет число пройденных уроков самого ученика (видно, что ничего не пропало) и спрашивает «Как вам новый вид?».
  */
 function newsCard() {
-  let seen = false;
-  try { seen = localStorage.getItem("tanwin.news") === NEWS.id; } catch {}
+  let seen = false, voted = false;
+  try { seen = localStorage.getItem("tanwin.news") === NEWS.id; voted = localStorage.getItem("tanwin.newsVote") === NEWS.id; } catch {}
   if (seen || !(store.get().profile.created < NEWS.since)) return null;
   const hide = () => { try { localStorage.setItem("tanwin.news", NEWS.id); } catch {} card.remove(); };
+  const { done } = courseProgress();
+  const thanks = (t) => h("p.news-vote", null, h("b", null, t));
+  const vote = (like) => {
+    try { localStorage.setItem("tanwin.newsVote", NEWS.id); } catch {}
+    track("news_vote", { Письмо: NEWS.id, Оценка: like ? "Нравится" : "Не нравится" });
+    ask.replaceWith(thanks(like ? "Спасибо! Значит, мы идём верной дорогой." : "Спасибо за честный ответ. Напишите, что неудобно: мы исправим."));
+    if (!like) openFeedback();
+  };
+  const ask = voted ? thanks("Спасибо за ответ!") : h("div.news-vote", null, h("b", null, "Как вам новый вид?"),
+    h("div.row.gap.wrap", null,
+      h("button.btn.secondary.small-btn", { type: "button", onclick: () => vote(true) }, icon("heart", { size: 18 }), "Нравится"),
+      h("button.btn.ghost.small-btn", { type: "button", onclick: () => vote(false) }, "Не нравится")));
   const card = h("div.card.news-card", null,
     h("b.news-h", null, icon("sparkle", { size: 20 }), "TanWin 3.0: новый вид"),
-    h("p", null, "Ассаляму алейкум! TanWin стал ярче. Объяснения в уроках идут фильмом, шаг за шагом: буквы пишутся на глазах и звучат."),
-    h("p", null, h("b", null, "Ваш прогресс, закладки и настройки на месте."), " Ничего учить заново не нужно."),
-    h("p", null, "Ещё нового: «Путь» стал дорогой из этапов, все настройки собраны на одном экране (шестерёнка вверху), а в «Моём Коране» каждая сура стоит на светлой наклейке."),
-    h("p", null, "Что-то неудобно или нашли ошибку? Напишите: кнопка есть на каждом экране. Мы исправим и поблагодарим вас в списке версий."),
+    h("p", null, "Ассаляму алейкум! Мы обновили вид всего приложения. Объяснения в уроках теперь идут фильмом, шаг за шагом."),
+    h("p", null, h("b", null, done ? `Ваш прогресс на месте: пройдено ${done} ${plural(done, "урок", "урока", "уроков")}.` : "Ваш прогресс на месте."), " Закладки и настройки тоже. Учить заново ничего не нужно."),
+    h("ul.news-list", null,
+      h("li", null, "Уроки, как и раньше, на «Пути». Он стал дорогой из этапов."),
+      h("li", null, "Настройки: шестерёнка вверху «Пути»."),
+      h("li", null, "«Прогресс»: два раздела, «Учёба» и «Коран»."),
+      h("li", null, "Значок приложения тоже новый: жёлтая звезда с открытой книгой.")),
+    ask,
+    h("p", null, "Нашли ошибку? Напишите: кнопка есть на каждом экране. Мы исправим и поблагодарим вас в списке версий."),
     h("p.news-sign", null, keep("Хаси Абдуллах, сын Алама")),
     h("div.row.gap.wrap", null,
+      h("button.btn.primary.small-btn", { type: "button", onclick: () => { hide(); startTour(pathTour()); } }, icon("info", { size: 18 }), "Показать, где что"),
       h("a.btn.secondary.small-btn", { href: "#/changelog", onclick: hide }, "Что нового"),
-      h("button.btn.primary.small-btn", { type: "button", onclick: hide }, "Понятно")),
+      h("button.btn.ghost.small-btn", { type: "button", onclick: hide }, "Понятно")),
     closeX(hide, "Закрыть письмо"));
   return card;
 }
