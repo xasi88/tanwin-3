@@ -3,7 +3,7 @@
 // Настоящий вид букв всегда показывает шрифт мусхафа (ar() из ui.js); рисунок здесь: учебная модель.
 import { h, ar } from "../ui.js";
 import { playAyah, playWord } from "../audio.js";
-import { loadSurah, wordKey } from "../data.js";
+import { loadSurah, wordKey, RECITERS, reciterOf } from "../data.js";
 import { store } from "../store.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -92,7 +92,7 @@ export function readAyahLit(words, alive) {
   let got = false;
   const lit = (i) => words.forEach((w, j) => w.classList.toggle("lit", j === i));
   loadSurah(1).then((d) => {
-    const seg = d.v[0][store.get().settings.reciter === "afasy" ? 3 : 2] || [];
+    const seg = d.v[0][RECITERS[reciterOf(store.get().settings.reciter)].seg] || []; // время слов выбранного чтеца (у Шатри своё, разбор 2026-10-25)
     playAyah(1, 1, {
       onTime: (ms) => { got = true; if (!alive()) return; lit(words.findIndex((_, i) => ms >= seg[i * 2] && ms < seg[i * 2 + 1] + 60)); },
       onEnd: () => lit(-1),

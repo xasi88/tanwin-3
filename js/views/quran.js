@@ -1068,7 +1068,8 @@ async function cacheSurah(n, data) {
   let ok = 0;
   toast(`Скачиваю аудио суры: 0 из ${urls.length}…`, 60000);
   for (let i = 0; i < urls.length; i += 6) {
-    await Promise.all(urls.slice(i, i + 6).map(async (u) => { try { if (!(await c.match(u))) { const r = await fetch(u); if (r.ok) await c.put(u, r); } ok++; } catch {} }));
+    // считаются только записи, которые на устройстве: ответ сервера с ошибкой не в счёт (разбор 2026-10-25)
+    await Promise.all(urls.slice(i, i + 6).map(async (u) => { try { if (await c.match(u)) { ok++; return; } const r = await fetch(u); if (r.ok) { await c.put(u, r); ok++; } } catch {} }));
     toast(`Скачиваю аудио суры: ${ok} из ${urls.length}…`, 60000);
   }
   toast(ok === urls.length ? "Готово: сура доступна без интернета ✓" : `Скачано ${ok} из ${urls.length}. Попробуйте ещё раз при хорошем интернете.`, 4000);
