@@ -238,7 +238,8 @@ G.hasLetter = (o) => sample(words({ level: "shadda", minLen: 3, maxLen: 6 }), o.
 // ================= Огласовки =================
 const VOW = { fatha: [M.FATHA, "a"], kasra: [M.KASRA, "i"], damma: [M.DAMMA, "u"], fathatan: [M.FATHATAN, "a", "н"], kasratan: [M.KASRATAN, "i", "н"], dammatan: [M.DAMMATAN, "u", "н"] };
 const SYL_LETTERS = L_ALL.filter((x) => !["alif", "hamza"].includes(x));
-const sylText = (id, v) => { const ch = byId[id].ch; return v === "fathatan" ? ch + M.FATHATAN + (id === "ta" ? "" : "ا") : ch + VOW[v][0]; };
+// фатхатан у любой буквы пишется с алифом (بًا, تًا); без алифа только та марбута ة, а её среди букв нет (разбор 2026-10-25)
+const sylText = (id, v) => { const ch = byId[id].ch; return v === "fathatan" ? ch + M.FATHATAN + "ا" : ch + VOW[v][0]; };
 const sylTr = (id, v) => syllRu(byId[id].ch, VOW[v][1]) + (VOW[v][2] || ""); // гласная зависит от буквы: после тяжёлых, «о» и «ы»
 G.syllable = (o, lesson) => {
   const vs = o.vowels || ["fatha"];
@@ -529,7 +530,8 @@ G.nunRule = async (o) => {
   }).filter(Boolean);
 };
 G.sunMoon = (o) => {
-  const pool = words({ level: "full", maxLen: 7, filter: (w) => /^ٱل/.test(w.d) && w.f.includes("w") });
+  // имя Аллаха (ٱللَّه, ٱللَّهُمَّ) в вопрос не идёт: лям в нём не артикль перед солнечной буквой, ответ «солнечная» путал бы (разбор 2026-10-25)
+  const pool = words({ level: "full", maxLen: 7, filter: (w) => /^ٱل/.test(w.d) && !/^ٱلل/.test(w.d) && w.f.includes("w") });
   return sample(pool.slice(0, 400), o.n).map((w) => {
     const cs = clusters(w.d);
     const lamSukun = cs[1] && (cs[1].m.includes(M.SUKUN_Q) || cs[1].m.includes(M.SUKUN));
