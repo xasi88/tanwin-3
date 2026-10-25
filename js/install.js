@@ -23,7 +23,7 @@ export const isInstalled = () => isStandalone() || flag();
 export const canPrompt = () => !!evt;
 // Вкладка браузера, а приложение уже стоит (поставили не из этого браузера или отметка потерялась): Chrome и Edge на компьютере
 // (с версии 140) и Chrome на Android отвечают через getInstalledRelatedApps, если в manifest.webmanifest есть ссылка на себя
-// (related_applications). Пустой ответ отметку не снимает: старый Chrome на компьютере отвечает пусто всегда.
+// (related_applications, полные адреса сайта и черновика). Пустой ответ отметку не снимает: старый Chrome на компьютере отвечает пусто всегда.
 // Удалённое приложение браузер и так выдаёт: снова предлагает установку (beforeinstallprompt выше).
 if (!isStandalone() && navigator.getInstalledRelatedApps) {
   navigator.getInstalledRelatedApps().then((apps) => { if (apps.some((a) => a.platform === "webapp") && !flag()) { setFlag(true); emit(); } }).catch(() => {});
