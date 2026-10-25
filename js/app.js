@@ -180,7 +180,13 @@ async function route() {
       if (path === "/") updateNotice(); // один раз и только на «Пути»: «приложение обновляется само»
     } catch (e) {
       console.error(e);
-      view.replaceChildren(h("div.page", null, h("div.card", null, h("h2", null, "Что-то пошло не так"), h("p", null, "Проверьте подключение к интернету и обновите страницу."), h("pre.small", null, String(e?.message || e)), h("a.btn.primary", { href: "#/" }, "На главную"))));
+      // связи нет, а нужного (например, суры, которую ещё не открывали) на устройстве нет: говорим это словами, без текста ошибки
+      const net = !navigator.onLine || /fetch|network|load failed/i.test(String(e?.message));
+      view.replaceChildren(h("div.page", null, h("div.card", null,
+        h("h2", null, net ? "Нет связи" : "Что-то пошло не так"),
+        h("p", null, net ? "Этого на устройстве ещё нет. Суры и экраны сохраняются, когда их открывают при интернете: откройте один раз со связью, дальше будет работать и без неё. Связь есть, а не открывается? Включите или выключите VPN." : "Проверьте подключение к интернету и обновите страницу."),
+        net ? null : h("pre.small", null, String(e?.message || e)),
+        h("a.btn.primary", { href: "#/" }, "На главную"))));
     }
     return;
   }
@@ -352,11 +358,12 @@ function registerSW() {
     if (swReg) { updFailed = true; emitUpd(); }
   });
   // перезагрузка нужна только при обновлении. При самом первом заходе service worker тоже «берёт управление»,
-  // но версия та же: перезагружать страницу посреди знакомства или урока незачем
-  const updating = !!navigator.serviceWorker.controller;
-  let reloaded = false;
+  // но версия та же: перезагружать страницу посреди знакомства или урока незачем.
+  // Был ли уже управляющий service worker, смотрим при каждом событии, а не один раз при запуске: иначе обновление,
+  // пришедшее в первую открытую страницу, не перезапускало её, и старый код работал с файлами новой версии (разбор 2026-10-25)
+  let controlled = !!navigator.serviceWorker.controller, reloaded = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!updating) loadData(); // первый заход: банк слов уже в памяти service worker, знакомство берёт его оттуда без второго скачивания
+    if (!controlled) { controlled = true; loadData(); } // первый заход: банк слов уже в памяти service worker, знакомство берёт его оттуда без второго скачивания
     else if (!reloaded) { reloaded = true; location.reload(); }
   });
   // приложение часто не закрывают, а сворачивают: тогда браузер сам новую версию не ищет. Ищем при возврате на экран
