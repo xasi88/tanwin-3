@@ -185,6 +185,8 @@ async function route() {
     }
     return;
   }
+  // в Telegram неизвестный адрес ведёт на «Путь»: Telegram может дописать в адрес своё (жалоба автора 2026-11-10)
+  if (inTelegram) { location.replace("#/"); return; }
   view.replaceChildren(h("div.page", null, h("div.card", null, h("h2", null, "Страница не найдена"), h("a.btn.primary", { href: "#/" }, "На главную"))));
 }
 export const go = (p) => { location.hash = "#" + p; };

@@ -8,10 +8,12 @@ const KOPIYA = "tanwin.tg"; // данные входа на время вкла�
 
 function dannyeVhoda() {
   let d = "";
+  // данные ищем в любом месте адреса: Telegram на разных устройствах ставит их по-разному
   try {
-    const p = new URLSearchParams(location.hash.slice(1));
-    d = p.get("tgWebAppData") || "";
-    if (d || p.has("tgWebAppVersion")) history.replaceState(null, "", location.pathname + location.search);
+    const adres = location.hash + "&" + location.search.slice(1);
+    const m = adres.match(/tgWebAppData=([^&]*)/);
+    if (m) d = decodeURIComponent(m[1]);
+    if (/tgWebApp/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
   } catch (e) { /* адрес без данных */ }
   try {
     if (d) sessionStorage.setItem(KOPIYA, d);
