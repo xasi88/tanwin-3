@@ -1,4 +1,5 @@
 // TanWin: оболочка приложения: маршруты, навигация, тема, офлайн.
+import { inTelegram, initTelegram, tgColors, addToHome } from "./tg.js"; // первым: убирает данные Telegram из адреса до первого экрана
 import { h, $, icon, toast, modal, checkShaping, queueFit, AR_FONTS, arFont } from "./ui.js";
 import { store, streakNow, levelInfo, todayXp, protectStorage, onStorageFail } from "./store.js";
 import { loadBank, loadSurahs } from "./data.js";
@@ -37,6 +38,7 @@ export function applySettings() {
   const dark = s.theme === "dark" || (s.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
   // строка браузера в цвет фона, и при чтении Корана тоже
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#1d1147" : "#6b3ff0");
+  tgColors(dark ? "#1d1147" : "#6b3ff0"); // шапка Telegram того же цвета
 }
 
 // ---------- Навигация ----------
@@ -66,7 +68,8 @@ function renderNav(active) {
       h("a.nf-ver", { href: "#/changelog" }, `Версия ${APP_VERSION} · в разработке`)));
 }
 export async function installApp() {
-  if (isInstalled()) toast(`TanWin уже установлен. Откройте его со значка ${whereIcon()}.`, 6000);
+  if (inTelegram) { addToHome(); toast("Telegram предложит добавить TanWin на главный экран.", 5000); }
+  else if (isInstalled()) toast(`TanWin уже установлен. Откройте его со значка ${whereIcon()}.`, 6000);
   else if (canPrompt()) { if (await install()) toast("TanWin установлен. Ищите его на рабочем столе ✓"); }
   // iPhone и iPad: окна установки нет, фильм показывает, куда нажать (js/kino/install.js). На живом iPhone не проверено.
   else if (isIOS()) (await import("./kino/install.js")).showInstallFilm();
@@ -219,6 +222,7 @@ async function start() {
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applySettings);
   store.on(() => applySettings());
   window.addEventListener("hashchange", route);
+  initTelegram();
   initFullscreen();
   initWake();
   initFeedback();
@@ -272,7 +276,7 @@ function startMetrika() {
   const count = (map) => Object.values(map).filter((x) => x.done && !x.skipped).length;
   const nt = nextTarget();
   initMetrika({
-    params: { Режим: isStandalone() ? "приложение" : "браузер" },
+    params: { Режим: inTelegram ? "Telegram" : isStandalone() ? "приложение" : "браузер" },
     user: {
       "Пройдено уроков": count(s.lessons),
       "Выучено сур": count(s.surahs),
