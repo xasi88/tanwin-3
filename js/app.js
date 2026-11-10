@@ -265,6 +265,7 @@ async function start() {
   document.fonts?.ready.then(queueFit);
   route();
   registerSW();
+  import("./cloud.js").then((m) => m.initCloud()).catch(() => {}); // облако прогресса: в Telegram и после «Привязать Telegram»
   import("./sound.js").then((m) => m.initSound()).catch(() => {}); // звук без интернета: что скачано, докачка этапа
   // когда есть что беречь: просим браузер не удалять данные приложения
   if (Object.keys(store.get().lessons).length) protectStorage();
