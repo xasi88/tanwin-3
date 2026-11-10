@@ -136,9 +136,11 @@ export function sync() {
 let timer = 0;
 function later() { clearTimeout(timer); timer = setTimeout(sync, PAUZA); }
 
-/** Сайт: привязать Telegram, шаг 1. Код привязки и ссылка на бота с ним: человек нажимает её сам (окно не блокируется). */
-export async function linkStart() {
-  const { kod } = await bot("/kod", {});
+/** Сайт: привязать Telegram, шаг 1. Код привязки (16 случайных знаков) придумывает сам сайт: ссылку на бота
+ *  можно открыть в том же нажатии, без ожидания ответа (2026-11-10, автор: «слишком сложно»). */
+export function linkStart() {
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  const kod = Array.from(b, (x) => "abcdefghijklmnopqrstuvwxyz0123456789"[x % 36]).join("");
   return { kod, url: "https://t.me/tanwin88_bot?start=svyaz_" + kod };
 }
 /** Шаг 2: ждёт, пока бот получит код (до 10 минут), входит и сливает прогресс. stop(): человек ушёл с экрана. */

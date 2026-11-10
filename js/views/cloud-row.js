@@ -35,13 +35,14 @@ export function cloudRow() {
     if (!(await confirmBox("Отвязать Telegram?", "Прогресс останется и на этом устройстве, и в Telegram. Новые уроки здесь больше не будут попадать в Telegram.", "Отвязать", "Отмена"))) return;
     cloud.unlink(); draw();
   }
-  async function link(e) {
-    const btn = e.currentTarget; btn.disabled = true;
+  async function link() {
     try {
-      const { kod, url } = await cloud.linkStart();
+      // Telegram открывается в том же нажатии: код придумывает сайт (js/cloud.js)
+      const { kod, url } = cloud.linkStart();
+      window.open(url, "_blank", "noopener");
       box.replaceChildren(h("div.set-row", null,
-        h("div", null, h("span.set-label", null, "Откройте бота TanWin"), h("small.muted", null, "Нажмите кнопку ниже, в Telegram нажмите «Запустить», потом вернитесь сюда. Прогресс подтянется сам.")),
-        h("a.btn.primary", { href: url, target: "_blank", rel: "noopener" }, "Открыть Telegram")));
+        h("div", null, h("span.set-label", null, "Ждём Telegram"), h("small.muted", null, "В Telegram нажмите «Запустить» и вернитесь сюда. Прогресс подтянется сам.")),
+        h("a.btn.secondary", { href: url, target: "_blank", rel: "noopener" }, "Открыть ещё раз")));
       const ok = await cloud.linkWait(kod, () => !box.isConnected);
       if (ok) toast("Telegram привязан. Прогресс объединён ✓", 4000);
       else if (box.isConnected) toast("Не дождались ответа бота. Попробуйте ещё раз.", 5000);
