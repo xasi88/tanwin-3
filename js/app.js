@@ -23,6 +23,7 @@ export function applySettings() {
   const s = store.get().settings;
   const root = document.documentElement;
   if (s.theme === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", s.theme);
+  if (s.look === "calm") root.dataset.look = "calm"; else delete root.dataset.look; // «Вид»: яркий (по умолчанию) или спокойный, css/calm.css
   // арабский и остальной текст увеличиваются независимо (см. «Арабский текст» в docs/ARCHITECTURE.md)
   root.style.setProperty("--ui-scale", s.uiScale || 1);
   root.style.setProperty("--ar-k", (s.arScale || 1) / (s.uiScale || 1));
@@ -37,8 +38,9 @@ export function applySettings() {
   }
   const dark = s.theme === "dark" || (s.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
   // строка браузера в цвет фона, и при чтении Корана тоже
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", dark ? "#1d1147" : "#6b3ff0");
-  tgColors(dark ? "#1d1147" : "#6b3ff0"); // шапка Telegram того же цвета
+  const bar = getComputedStyle(root).getPropertyValue("--bg").trim() || (dark ? "#1d1147" : "#6b3ff0");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", bar);
+  tgColors(bar); // шапка Telegram того же цвета
 }
 
 // ---------- Навигация ----------

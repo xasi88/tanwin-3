@@ -1,0 +1,83 @@
+/* Спокойный вид (настройка «Вид: Спокойный», settings.look = "calm").
+   Просьба учеников (Иман, 2026-11-18): яркий вид отвлекает от материала. Решение автора: яркий остаётся по умолчанию,
+   спокойный выбирается в настройках. Раскладка, курс и экраны те же: меняются только цвета, контуры, тени и шрифт заголовков.
+   Описание: docs/Брендбук TanWin.md, раздел «Спокойный вид». */
+
+:root[data-look="calm"] {
+  /* цвета выбрал автор 2026-11-18: «как в 2.0», кремовая бумага и изумрудный */
+  --bg: #f7f3ea; --bg-2: #f7f3ea; --card: #ffffff; --card-2: #fffdf8; --card-3: #f1ece1;
+  --ink: #1e1b2e; --ink-2: #4f4b63; --ink-3: #6a6580; --line: #e8e0cf; --line-2: #dcd2bd;
+  --on-bg: #1e1b2e; --on-bg-2: #5a566e; --edge: #e2d9c6;
+  --accent: #0a7559; --accent-2: #085e47; --accent-soft: #dcf1e8; --accent-ink: #fff;
+  --lime: #d4ecdf; --yellow: #f6e9c6; --pink: #f6dde2; --sky: #dbe8f3; --mint: #d6efe4; --peach: #f6e2d4;
+  --calm-scene: #2f5b4f; --calm-scene-2: #35506e; --calm-scene-3: #6b4a58;
+  --shadow: 0 1px 2px rgba(60, 40, 10, .06), 0 4px 14px rgba(60, 40, 10, .07);
+  --shadow-lg: 0 10px 30px rgba(60, 40, 10, .12);
+  --display: "Manrope", "Nunito", system-ui, sans-serif;
+}
+
+/* Ночью: тёмный приглушённый фон, карточки чуть темнее белого (текст на них тот же) */
+@media (prefers-color-scheme: dark) {
+  :root[data-look="calm"]:not([data-theme="light"]) {
+    --bg: #17191f; --bg-2: #17191f; --card: #ebe8e1; --card-2: #f3f1ec; --card-3: #dedad1;
+    --on-bg: #e9e7e1; --on-bg-2: #b5b2aa; --edge: #c9c3b6;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+  }
+}
+:root[data-look="calm"][data-theme="dark"] {
+  --bg: #17191f; --bg-2: #17191f; --card: #ebe8e1; --card-2: #f3f1ec; --card-3: #dedad1;
+  --on-bg: #e9e7e1; --on-bg-2: #b5b2aa; --edge: #c9c3b6;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+
+/* Без жёстких теней-«наклеек» и без наклона: карточки лежат ровно */
+:root[data-look="calm"] { --edge-sh: transparent; }
+:root[data-look="calm"] body *:not(.ins-compass i) { rotate: none !important; }
+
+/* Фон без точек, заголовки без жёсткой тени */
+:root[data-look="calm"] body, :root[data-look="calm"] .focus { background-image: none; }
+:root[data-look="calm"] .page-head h1, :root[data-look="calm"] .home-head h1, :root[data-look="calm"] .page > h1,
+:root[data-look="calm"] .page > h2, :root[data-look="calm"] .page > section > h2, :root[data-look="calm"] .mq-h,
+:root[data-look="calm"] .rules-group > h2, :root[data-look="calm"] .sec-h, :root[data-look="calm"] .donors > .card-title h3 { text-shadow: none; }
+
+/* Фильмы и уроки (.kino): спокойный сплошной фон сцены, тонкий контур, мягкая тень, без наклона */
+:root[data-look="calm"] .kino {
+  --k-bg: var(--calm-scene); --k-dot: var(--calm-scene);
+  --k-lime: var(--lime); --k-yellow: var(--yellow); --k-sky: var(--sky); --k-mark: var(--accent);
+  --k-line: 1.5px solid var(--edge);
+  --k-shadow: var(--shadow-lg); --k-shadow-sm: var(--shadow);
+  --k-display: var(--display);
+  background-image: none;
+}
+:root[data-look="calm"] .kino[data-tone="blue"] { --k-bg: var(--calm-scene-2); --k-dot: var(--calm-scene-2); }
+:root[data-look="calm"] .kino[data-tone="pink"] { --k-bg: var(--calm-scene-3); --k-dot: var(--calm-scene-3); }
+:root[data-look="calm"] .kino .k-st, :root[data-look="calm"] .kino .k-badge { rotate: 0deg; }
+:root[data-look="calm"] .kino .k-title { -webkit-text-stroke: 0; text-shadow: none; }
+:root[data-look="calm"] .kino .k-eq, :root[data-look="calm"] .ob-kino .ob-screen h2, :root[data-look="calm"] .lesson.kino .lp-xp,
+:root[data-look="calm"] .lesson.kino .q-text h2, :root[data-look="calm"] .lesson.kino .result h1 { text-shadow: none; }
+:root[data-look="calm"] .kino .k-call { animation: none; }
+
+/* Кнопки без объёмной «ступеньки», нажатие без прыжка */
+:root[data-look="calm"] .btn, :root[data-look="calm"] .btn:active { box-shadow: none; transform: none; border-width: 1.5px; }
+:root[data-look="calm"] .btn.primary, :root[data-look="calm"] .btn.primary:hover { --bi: var(--accent-ink); background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+:root[data-look="calm"] :is(.ok, .bad) .btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* Цвет этапа: лёгкий оттенок вместо заливки */
+:root[data-look="calm"] :is(.hero-card, .unit-head, .node) { --hf: color-mix(in srgb, var(--hc) 16%, var(--card)); }
+
+/* Тёмные плашки яркого вида (заливка цветом контура) становятся светлыми */
+:root[data-look="calm"] :is(.rc-ic, .drill.main .dr-ic, .mh-ic) { background: var(--accent-soft); border-color: var(--accent-soft); color: var(--accent); }
+:root[data-look="calm"] .uh-num { background: var(--ink-2); border-color: var(--ink-2); color: #fff; }
+:root[data-look="calm"] .m-cell i { background: var(--ink-3); }
+
+/* Узлы «Пути»: подписи без тёмной подложки, звёзды золотом, закрытые уроки серым */
+:root[data-look="calm"] .node-disc { box-shadow: var(--shadow); }
+:root[data-look="calm"] .node-label, :root[data-look="calm"] .node.locked .node-label { background: none; color: var(--on-bg-2); }
+:root[data-look="calm"] .node-label .ar.inline { color: var(--on-bg); }
+:root[data-look="calm"] .node.locked .node-disc { background: var(--card-3); border-color: var(--line-2); color: var(--ink-3); box-shadow: none; }
+:root[data-look="calm"] .node-stars i { color: var(--line-2); }
+:root[data-look="calm"] .node-stars i.on { color: var(--gold-2); -webkit-text-stroke: 0; }

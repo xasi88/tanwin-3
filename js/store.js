@@ -56,7 +56,7 @@ const DEFAULT = () => ({
   v: 2,
   course: COURSE,
   profile: { name: "", form: "vy", gender: "", created: Date.now(), goal: 30, goalLessons: 1, goalSince: today(), onboarded: false }, // form: «вы» или «ты», gender: "m" | "f" | ""; goal: старая цель в нуре (до 1.33)
-  settings: { theme: "auto", arScale: 1, reciter: "husary", translit: "show", translitV: 2, tajweed: true, sfx: true, translation: true, rate: 1, unlockAll: false, uiScale: 1, analytics: true, arFont: "hafs" },
+  settings: { theme: "auto", look: "bright", arScale: 1, reciter: "husary", translit: "show", translitV: 2, tajweed: true, sfx: true, translation: true, rate: 1, unlockAll: false, uiScale: 1, analytics: true, arFont: "hafs" },
   lessons: {},
   surahs: {},
   xp: 0,

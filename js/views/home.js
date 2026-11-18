@@ -236,7 +236,10 @@ function lessonSheet(l, u) {
     h("h2", null, mixed(l.title)), h("p.muted", null, mixed(l.sub)),
     done && st ? h("p", null, st.skipped ? "Пропущен после проверки этапа." : `Лучший результат: ${st.best}% · ${"★".repeat(st.stars)}`) : null,
     open
-      ? h("button.btn.primary.wide", { type: "button", onclick: () => { close(); go(`/learn/${l.id}`); } }, done ? "Пройти ещё раз" : "Начать урок", icon("right", { size: 18 }))
+      ? h("div", null,
+          h("button.btn.primary.wide", { type: "button", onclick: () => { close(); go(`/learn/${l.id}`); } }, done ? icon("repeat", { size: 18 }) : null, done ? "Повторить урок" : "Начать урок", done ? null : icon("right", { size: 18 })),
+          // отзыв Иман 2026-11-18: боялись, что повтор сбросит прогресс. Не сбрасывает: store.js берёт лучший результат
+          done ? h("small.muted.ls-note", null, "Пройденное не пропадёт: останется лучший результат.") : null)
       : h("div", null,
           h("p", null, icon("lock", { size: 16 }), " Сначала пройдите предыдущие уроки."),
           testOf(u) ? h("button.btn.secondary.wide", { type: "button", onclick: () => { close(); go(`/learn/${testOf(u).id}`); } }, icon("bolt", { size: 18 }), "Уже знаю, сдать проверку этапа") : null)));
