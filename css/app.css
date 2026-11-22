@@ -2031,3 +2031,8 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .share-img { width: min(100%, 320px); height: auto; aspect-ratio: 4 / 5; border-radius: 16px; border: 3px solid var(--edge); background: var(--card-3); }
 .share-invite { display: grid; gap: 12px; padding: 16px; background: var(--card-3); border-radius: 20px; text-align: center; }
 .share-invite p { margin: 0; font-weight: 800; }
+.share-img[data-format="story"], .share-img:not([data-format]) { width: min(100%, 250px); aspect-ratio: 9 / 16; }
+.share-card { display: grid; gap: 12px; margin-top: 16px; }
+.share-card > div { display: grid; gap: 2px; }
+.share-letter .share-quote { font-size: .95rem; }
+.share-view .btn { min-height: 46px; } /* запас: при крупном тексте высота округлялась до 43,9 */

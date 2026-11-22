@@ -1,4 +1,5 @@
-// «Поделиться TanWin»: окно с хадисом и готовая картинка 1080×1350 для чата и историй.
+// «Поделиться TanWin»: окно с хадисом и готовая картинка: 1080×1920 для историй (9:16) и 1080×1350 для чата.
+// В историях верх и низ экрана закрывают кнопки Instagram и WhatsApp: там картинка держит поля 250 и 300 точек.
 // Картинка рисуется на холсте, чужих библиотек нет. Цвета берутся из css/app.css: какое оформление у ученика, такая и картинка.
 // Арабский текст: шрифт «Мадина» (TW Hafs), сукун в нём ۡ. Арабский текст и номера хадисов сверены по sunnah.com 2026-11-22.
 // Русский перевод изданный, не наш: «Сахих аль-Бухари» (5027) и «Сады праведных», хадис 174 (Муслим, 2674, первая половина), по isnad.link. Слова в скобках добавил переводчик.
@@ -7,7 +8,9 @@ import { h, keep, modal, toast, icon, plural } from "./ui.js";
 import { store } from "./store.js";
 import { track } from "./usage.js";
 
-const W = 1080, H = 1350, PAD = 72;
+const W = 1080, PAD = 72;
+/** Форматы картинки: высота, поле сверху и снизу. */
+export const FORMATS = { story: { h: 1920, top: 250, bottom: 300, label: "Для историй" }, chat: { h: 1350, top: 0, bottom: 64, label: "Для чата" } };
 const SITE = "tanwin.xasi88.ru";
 const LINK = `https://${SITE}/`;
 
@@ -40,7 +43,8 @@ function wrap(ctx, text, max) {
   return out;
 }
 
-function draw(ctx, { n, logo }) {
+function draw(ctx, { n, logo, fmt }) {
+  const H = fmt.h, Y0 = fmt.top;
   const css = getComputedStyle(document.documentElement);
   const v = (name) => css.getPropertyValue(name).trim();
   const display = (px) => `800 ${px}px "Unbounded", "Arial Black", system-ui, sans-serif`;
@@ -60,24 +64,27 @@ function draw(ctx, { n, logo }) {
   ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; ctx.direction = "ltr";
 
   // Значок и имя
-  if (logo) ctx.drawImage(logo, PAD, 60, 124, 124);
-  ctx.font = display(62); ctx.fillStyle = v("--on-bg"); ctx.fillText("TanWin", PAD + 152, 146);
+  if (logo) ctx.drawImage(logo, PAD, Y0 + 60, 124, 124);
+  ctx.font = display(62); ctx.fillStyle = v("--on-bg"); ctx.fillText("TanWin", PAD + 152, Y0 + 146);
 
-  // Низ: «Бесплатно», призыв, адрес и QR-код
-  const qr = 232, qx = W - PAD - qr, qy = H - 64 - qr;
+  // Низ: «Бесплатно», приглашение для друга, адрес и QR-код
+  const qr = 232, qx = W - PAD - qr, qy = H - fmt.bottom - qr;
+  const invite = n ? ["Присоединяйтесь"] : ["Я учусь читать Коран.", "Присоединяйтесь"];
+  const up = (invite.length - 1) * 50;
   sticker(qx, qy, qr, qr, 28, v("--card-2"), 8);
   const qp = 28, cell = (qr - qp * 2) / QR.length; // поле вокруг кода: 4 точки кода, иначе камера читает хуже
   ctx.fillStyle = v("--ink");
   QR.forEach((row, y) => [...row].forEach((bit, x) => { if (bit === "1") ctx.fillRect(qx + qp + x * cell, qy + qp + y * cell, cell + 0.4, cell + 0.4); }));
   ctx.font = display(34);
   const fw = ctx.measureText("Бесплатно").width + 64;
-  sticker(PAD, qy + 4, fw, 72, 36, v("--lime"), 6);
-  ctx.fillStyle = v("--ink"); ctx.fillText("Бесплатно", PAD + 32, qy + 53);
-  ctx.font = body(38); ctx.fillStyle = v("--on-bg-2"); ctx.fillText("Научитесь читать Коран", PAD, qy + 146);
+  sticker(PAD, qy + 4 - up, fw, 72, 36, v("--lime"), 6);
+  ctx.fillStyle = v("--ink"); ctx.fillText("Бесплатно", PAD + 32, qy + 53 - up);
+  ctx.font = body(38); ctx.fillStyle = v("--on-bg-2");
+  invite.forEach((line, i) => ctx.fillText(line, PAD, qy + 146 - (invite.length - 1 - i) * 50));
   ctx.font = display(44); ctx.fillStyle = v("--on-bg"); ctx.fillText(SITE, PAD, qy + 212);
 
   // Результат ученика
-  const top = 232, bottom = qy - 56;
+  const top = Y0 + 232, bottom = qy - 56 - up;
   const resH = n ? 196 : 0;
   if (n) {
     const ry = bottom - resH;
@@ -117,8 +124,9 @@ function draw(ctx, { n, logo }) {
 
 const loadImg = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
 
-/** Картинка PNG. n: число пройденных уроков, 0: картинка без результата. */
-export async function renderCard(n) {
+/** Картинка PNG. n: число пройденных уроков, 0: картинка без результата. format: "story" (9:16) или "chat" (4:5). */
+export async function renderCard(n, format = "story") {
+  const fmt = FORMATS[format] || FORMATS.story;
   const [logo] = await Promise.all([
     loadImg("icons/icon.svg"),
     document.fonts.load('96px "TW Hafs"', HADITH.pic.ar),
@@ -126,45 +134,58 @@ export async function renderCard(n) {
     document.fonts.load('800 46px "Manrope"', HADITH.pic.ru),
     document.fonts.load('500 36px "Manrope"', HADITH.pic.ru),
   ].map((p) => Promise.resolve(p).catch(() => null)));
-  const c = h("canvas", { width: W, height: H });
-  draw(c.getContext("2d"), { n, logo });
+  const c = h("canvas", { width: W, height: fmt.h });
+  draw(c.getContext("2d"), { n, logo, fmt });
   return new Promise((ok) => c.toBlob(ok, "image/png"));
 }
 
 /** Окно «Поделитесь TanWin». from: откуда открыли, для статистики. */
 export function openShare(from = "Ещё") {
   const total = lessonsDone();
-  let withResult = total > 0, url = "", file = null;
+  let withResult = total > 0, format = "story", url = "", file = null;
   track("share_opened", { Откуда: from });
-  const img = h("img.share-img", { alt: "Картинка TanWin: хадис о тех, кто учит Корану, и адрес приложения", width: W, height: H });
+  const img = h("img.share-img", { alt: "Картинка TanWin: хадис о тех, кто учит Корану, и адрес приложения", width: W, height: FORMATS.story.h });
   const acts = h("div.row.gap.wrap.center");
-  const how = (way) => track("shared", { Способ: way, Результат: withResult ? "показан" : "скрыт", Откуда: from });
+  const how = (way) => track("shared", { Способ: way, Формат: FORMATS[format].label, Результат: withResult ? "показан" : "скрыт", Откуда: from });
   const share = async () => {
     try { await navigator.share({ files: [file], text: shareText(withResult ? total : 0) }); how("Поделиться"); }
     catch (e) { if (e?.name !== "AbortError") toast("Не получилось поделиться. Нажмите «Сохранить»"); }
   };
   async function paint() {
-    const blob = await renderCard(withResult ? total : 0).catch(() => null);
+    const blob = await renderCard(withResult ? total : 0, format).catch(() => null);
     if (!blob) { toast("Не получилось создать картинку"); return; }
     if (url) URL.revokeObjectURL(url);
     url = URL.createObjectURL(blob);
-    file = typeof File === "function" ? new File([blob], "tanwin.png", { type: "image/png" }) : null;
-    img.src = url;
+    const name = format === "story" ? "tanwin-story.png" : "tanwin.png";
+    file = typeof File === "function" ? new File([blob], name, { type: "image/png" }) : null;
+    img.height = FORMATS[format].h; img.dataset.format = format; img.src = url;
     const canShare = !!(file && navigator.canShare?.({ files: [file] }));
     acts.replaceChildren(
       canShare ? h("button.btn.primary", { type: "button", onclick: share }, "Поделиться") : null,
-      h("a.btn", { class: canShare ? "secondary" : "primary", href: url, download: "tanwin.png", onclick: () => how("Сохранить") }, icon("down", { size: 18 }), "Сохранить"));
+      h("a.btn", { class: canShare ? "secondary" : "primary", href: url, download: name, onclick: () => how("Сохранить") }, icon("down", { size: 18 }), "Сохранить"));
   }
-  const toggle = total ? h("button.btn.ghost.small-btn", { type: "button", onclick: () => { withResult = !withResult; toggle.textContent = label(); paint(); } }) : null;
+  const toggle = total ? h("button.btn.ghost.small-btn.share-result", { type: "button", onclick: () => { withResult = !withResult; toggle.textContent = label(); paint(); } }) : null;
   const label = () => (withResult ? "Убрать мой результат" : "Показать мой результат");
   if (toggle) toggle.textContent = label();
+  // Формат: для историй (9:16, стоит сразу) или для чата (4:5)
+  const fmtBtn = (key) => h("button.btn.small-btn", { type: "button", "data-format": key, onclick: () => { if (format === key) return; format = key; mark(); paint(); } }, FORMATS[key].label);
+  const fmts = h("div.row.gap.center.share-formats", { role: "group", "aria-label": "Формат картинки" }, fmtBtn("story"), fmtBtn("chat"));
+  const mark = () => [...fmts.children].forEach((b) => { const on = b.dataset.format === format; b.classList.toggle("secondary", on); b.classList.toggle("ghost", !on); b.setAttribute("aria-pressed", on); });
+  mark();
   modal(h("div.share-view", null,
     h("h3", null, "Поделитесь TanWin"),
     h("blockquote.share-quote", null, keep(`«${HADITH.call.ru}»`), h("cite", null, keep(HADITH.call.src))), // keep: слова хадиса не переводятся на «ты»
     h("p.share-call", null, "Хотите быть среди тех, кто помогает людям читать Коран? Отправьте эту картинку близким. TanWin бесплатный."),
-    img, toggle, acts),
+    fmts, img, toggle, acts),
   { onClose: () => setTimeout(() => url && URL.revokeObjectURL(url), 1000) });
   paint();
+}
+
+/** Карточка на «Прогрессе»: кнопка «Поделиться» на виду, рядом с успехами ученика. */
+export function shareCard() {
+  return h("section.card.share-card", null,
+    h("div", null, h("b", null, "Позовите близких читать Коран"), h("small.muted", null, "Готовая картинка для историй и чата. TanWin бесплатный.")),
+    h("button.btn.secondary", { type: "button", onclick: () => openShare("Прогресс") }, icon("heart", { size: 18 }), "Поделиться TanWin"));
 }
 
 /** Карточка на итоге урока, который завершил этап: хадис и кнопка. */

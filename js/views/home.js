@@ -11,7 +11,7 @@ import { soundRow } from "../sound.js";
 import { isInstalled, onInstallChange } from "../install.js";
 import { feedbackButton, openFeedback } from "../feedback.js";
 import { homeLine, studentName } from "../tutor.js";
-import { NEWS } from "../version.js";
+import { NEWS, SHARE_LETTER } from "../version.js";
 import { tourWaits, startTour } from "../tour.js";
 import { track, user, whoParams } from "../usage.js";
 
@@ -194,6 +194,35 @@ function newsCard() {
 }
 
 /**
+ * Письмо «Поделитесь TanWin» (просьба автора 2026-11-22): один раз, постоянным ученикам.
+ * Постоянный: есть пройденный урок и первый заход был не сегодня. Новичку не показываем (кодекс, «Новичок»).
+ * Сначала общий успех (часы из Метрики), потом хадис, потом просьба. Любая кнопка и крестик закрывают письмо навсегда:
+ * кнопка «Поделиться» остаётся на «Прогрессе» и в «Ещё».
+ */
+const DAY = 864e5;
+function shareLetter() {
+  const KEY = "tanwin.shareLetter";
+  let seen = false;
+  try { seen = localStorage.getItem(KEY) === SHARE_LETTER.id; if (navigator.webdriver && !localStorage.getItem("tanwin.shareTest")) return null; } catch {} // роботы проверок письмо не видят, кроме своего робота
+  const { done } = courseProgress();
+  if (seen || !done || !(store.get().profile.created < Date.now() - DAY)) return null;
+  const hide = () => { try { localStorage.setItem(KEY, SHARE_LETTER.id); } catch {} card.remove(); };
+  const share = () => { hide(); import("../share.js").then((m) => m.openShare("Письмо")); };
+  const card = h("div.card.news-card.share-letter", null,
+    h("b.news-h", null, icon("heart", { size: 20 }), `Больше ${SHARE_LETTER.hours} часов с Кораном`),
+    h("p", null, `Ассаляму алейкум! Ученики TanWin провели за чтением и изучением Корана больше ${SHARE_LETTER.hours} часов. Это подсчёт на ${SHARE_LETTER.date}. `, h("b", null, "Вы среди этих людей.")),
+    h("blockquote.share-quote", null, keep("«Когда человек умирает, (все) его дела прекращаются за исключением трёх: непрерывной милостыни, знания, которым могут пользоваться (другие люди), или праведных детей, которые станут обращаться к Аллаху с мольбами за него»"), h("cite", null, keep("Муслим, 1631"))),
+    h("p", null, "Расскажите о TanWin близким. Каждый, кто начнёт читать Коран по вашему приглашению, может стать частью этого блага и для вас, если пожелает Аллах. Приложение бесплатное."),
+    h("p.news-sign", null, keep("Хаси Абдуллах, сын Алама")),
+    h("div.row.gap.wrap", null,
+      h("button.btn.primary.small-btn", { type: "button", onclick: share }, icon("heart", { size: 18 }), "Поделиться TanWin"),
+      h("button.btn.ghost.small-btn", { type: "button", onclick: hide }, "Не сейчас")),
+    closeX(hide, "Закрыть письмо"));
+  track("share_letter_shown");
+  return card;
+}
+
+/**
  * Окно «Новое: спокойное оформление» (3.2.0): один раз, тем, кто начал заниматься до выпуска.
  * Отзыв ученицы 2026-11-18: яркий вид отвлекает, повтор урока не нашла. Выбор применяется сразу, его видно за окном.
  * Новичку не показываем: сначала он должен увидеть само приложение (кодекс, «Новичок»).
@@ -358,7 +387,7 @@ export function HomeView() {
         updPlaque(),
         welcomeCard() || continueCard(),
         reviewCard(),
-        newsCard(),
+        newsCard() || shareLetter(),
         installCard(),
         backupCard(),
         h("p.home-fb", null, "Нашли ошибку? ", feedbackButton({ cls: "link", label: "Напишите" })),

@@ -152,7 +152,9 @@ export async function ProgressView() {
   };
   for (const [key, label] of [["study", "Учёба"], ["quran", "Коран"]]) tabs.append(h("button.seg-btn", { type: "button", role: "tab", "data-tab": key, "aria-controls": "pg-panel", onclick: () => pick(key) }, label));
   const top = tracks(pick);
-  const view = h("div.page.progress", null, h("header.page-head", null, h("h1", null, "Прогресс")), top, calendar(), tabs, panel);
+  const shareSlot = h("div.share-slot"); // кнопка «Поделиться» на виду; код окна подгружается отдельно
+  import("../share.js").then((m) => shareSlot.append(m.shareCard())).catch(() => shareSlot.remove());
+  const view = h("div.page.progress", null, h("header.page-head", null, h("h1", null, "Прогресс")), top, calendar(), tabs, panel, shareSlot);
   pick(tabNow());
   return view;
 }
