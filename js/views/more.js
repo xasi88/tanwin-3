@@ -117,6 +117,7 @@ export function MoreView() {
       link("#/author", "chat", "Послание от разработчика", "Как и зачем появился TanWin", "t-violet"),
       link("#/thanks", "heart", "Благодарности", "Люди, благодаря которым состоялся проект", "t-peach"),
       link("#/changelog", "list", `Версии`, `Сейчас ${APP_VERSION}: ${CHANGELOG[0].title}`, "t-sky"),
+      h("button.more-link.t-pink", { type: "button", onclick: () => import("../share.js").then((m) => m.openShare("Ещё")) }, h("span.ml-ic", null, icon("heart", { size: 22, sw: 2.2 })), h("div", null, h("b", null, "Поделиться TanWin"), h("small.muted", null, "Готовая картинка с хадисом для близких")), icon("right", { size: 18, sw: 2.6 })),
       installLink()),
     h("h2.sec-label", null, "Связь"),
     h("div.more-links", null,

@@ -2008,3 +2008,26 @@ a.drill:active { translate: 4px 4px; box-shadow: 0 0 0 var(--edge); }
 .upd-plaque small { font-weight: 600; }
 .upd-plaque .btn { flex: none; }
 @media (max-width: 400px) { .snd-row, .upd-plaque { flex-wrap: wrap; } .snd-row .btn, .upd-plaque .btn { flex: 1 1 100%; } }
+
+/* Окно «Новое: спокойное оформление» (3.2.0, js/views/home.js → lookNotice) */
+.look-note { display: grid; gap: 12px; }
+.look-note p { margin: 0; }
+.look-opts { display: grid; gap: 10px; }
+.look-opt { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 14px; border: 2.5px solid var(--line-2); border-radius: 18px; background: var(--card-2); color: var(--ink); text-align: left; cursor: pointer; font: inherit; }
+.look-opt.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.look-opt b { display: block; font-size: 1.02rem; }
+.look-opt small { color: var(--ink-2); }
+.lo-sw { display: flex; flex: none; gap: 3px; padding: 6px; border-radius: 12px; }
+.lo-sw i { width: 12px; height: 26px; border-radius: 6px; }
+.lo-sw.bright { background: #6b3ff0; } .lo-sw.bright i:nth-child(1) { background: #c8f53a; } .lo-sw.bright i:nth-child(2) { background: #fad12b; } .lo-sw.bright i:nth-child(3) { background: #ff5fae; }
+.lo-sw.calm { background: #f7f3ea; box-shadow: inset 0 0 0 1px #e2d9c6; } .lo-sw.calm i:nth-child(1) { background: #0a7559; } .lo-sw.calm i:nth-child(2) { background: #d4ecdf; } .lo-sw.calm i:nth-child(3) { background: #ffffff; }
+
+/* «Поделиться TanWin»: окно с хадисом и картинкой, карточка на итоге этапа */
+.share-view { display: grid; gap: 14px; justify-items: center; text-align: center; }
+.share-view h3 { margin: 0; }
+.share-quote { margin: 0; padding: 14px 16px; background: var(--card-3); border-radius: 18px; font-weight: 800; }
+.share-quote cite, .share-invite cite { display: block; margin-top: 6px; font-style: normal; font-weight: 500; font-size: .86rem; color: var(--ink-2); }
+.share-call { margin: 0; }
+.share-img { width: min(100%, 320px); height: auto; aspect-ratio: 4 / 5; border-radius: 16px; border: 3px solid var(--edge); background: var(--card-3); }
+.share-invite { display: grid; gap: 12px; padding: 16px; background: var(--card-3); border-radius: 20px; text-align: center; }
+.share-invite p { margin: 0; font-weight: 800; }

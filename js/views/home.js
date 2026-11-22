@@ -193,6 +193,34 @@ function newsCard() {
   return card;
 }
 
+/**
+ * Окно «Новое: спокойное оформление» (3.2.0): один раз, тем, кто начал заниматься до выпуска.
+ * Отзыв ученицы 2026-11-18: яркий вид отвлекает, повтор урока не нашла. Выбор применяется сразу, его видно за окном.
+ * Новичку не показываем: сначала он должен увидеть само приложение (кодекс, «Новичок»).
+ */
+const LOOK_NOTE = { key: "tanwin.lookNote", since: Date.parse("2026-11-18T23:59:59+03:00") };
+function lookNotice() {
+  const st = store.get();
+  try { if (localStorage.getItem(LOOK_NOTE.key)) return; } catch { return; }
+  if (!st.profile.onboarded || !(st.profile.created < LOOK_NOTE.since)) return;
+  if (navigator.webdriver && !localStorage.getItem("tanwin.lookTest")) return; // роботы проверок (tools/audit) учатся «давним» учеником: окно закрыло бы им экран
+  if (!location.hash.match(/^(#\/?)?$/)) return;
+  if (document.querySelector(".modal-wrap, .tour-hole")) { setTimeout(lookNotice, 1500); return; } // открыто другое окно: ждём, пока закроют
+  try { localStorage.setItem(LOOK_NOTE.key, "1"); } catch {}
+  const pick = (v) => { store.set((s) => { s.settings.look = v; }); opts.forEach((b) => { const on = b.dataset.look === v; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); }); };
+  const cur = st.settings.look || "bright";
+  const opt = (v, t, sub) => h("button.look-opt", { type: "button", role: "radio", "data-look": v, "aria-checked": v === cur, class: v === cur ? "on" : "", onclick: () => pick(v) },
+    h("span.lo-sw", { class: v }, h("i"), h("i"), h("i")), h("span", null, h("b", null, t), h("small", null, sub)));
+  const opts = [opt("bright", "Яркое", "как сейчас"), opt("calm", "Спокойное", "мягкие цвета, ничего не отвлекает")];
+  modal((close) => h("div.look-note", null,
+    h("b.news-h", null, icon("sparkle", { size: 20 }), "Новое: спокойное оформление"),
+    h("p", null, "Ассаляму алейкум! Некоторым ученикам яркие цвета мешают сосредоточиться на уроке. Теперь оформление можно выбрать."),
+    h("div.look-opts", { role: "radiogroup", "aria-label": "Оформление" }, ...opts),
+    h("p.muted", null, "Уроки и прогресс не меняются. Сменить можно в любой момент: «Настройки» → «Вид» → «Оформление»."),
+    h("p.muted", null, "И ещё: пройденный урок можно повторить. Нажмите на него на «Пути». Прогресс не пропадёт."),
+    h("button.btn.primary.wide", { type: "button", onclick: close }, "Готово")));
+}
+
 function reviewCard() {
   const due = srsDue().length;
   if (!due) return null;
@@ -339,6 +367,7 @@ export function HomeView() {
         h("h2.sec-h", null, "Весь путь"),
         h("p.sec-sub", null, "14 этапов: от первой буквы до чтения сур. Нажмите на этап, и откроются его уроки."),
         h("div.path", null, ...[...UNITS, SURAH_UNIT].map((u) => unitBlock(u, target))))));
+  setTimeout(lookNotice, 700); // окно о спокойном оформлении, один раз
   // прокрутка к текущему узлу: только на широком экране, где путь в своей колонке.
   // На телефоне не прыгаем вниз к пути: сверху должна быть видна «Продолжить».
   requestAnimationFrame(() => {

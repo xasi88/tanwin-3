@@ -573,6 +573,7 @@ export async function playLesson(root, { id, title, steps, isTest = false, onExi
       note ? h("p.tutor-line", null, note) : null,
       weakText ? h("p.tutor-weak", null, icon("target", { size: 18 }), h("span", null, mixed(voice.weakNote(weakText)))) : null,
       show,
+      unit ? shareSlot() : null,
       passed && id === "1.1" ? afterFirstLesson() : null,
       passed && id ? profileSlot() : null,
       h("p.muted", null, passed ? (isTest && id ? `Проверка сдана. Пройденное засчитано. Дальше: ${afterTest(id).nextText}.` : isTest ? "Проверка сдана." : "Новые знания уже в «Практике».") : "Для проверки нужно 80% верных ответов с первой попытки. Повторите и попробуйте снова: вы справитесь."),
@@ -594,6 +595,13 @@ export async function playLesson(root, { id, title, steps, isTest = false, onExi
 
   progress();
   show();
+}
+
+/** Этап пройден: хадис и кнопка «Поделиться TanWin». Код окна подгружается, когда карточка нужна. */
+function shareSlot() {
+  const slot = h("div.share-slot");
+  import("./share.js").then((m) => slot.append(m.shareInvite("Этап пройден"))).catch(() => slot.remove());
+  return slot;
 }
 
 // ---------- Слово учителя: сколько раз показано ----------

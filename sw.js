@@ -1,5 +1,5 @@
 // Service worker TanWin: офлайн-режим. Список файлов и версия обновляются командой: node tools/build.mjs
-const VERSION = "6391d4e73e";
+const VERSION = "1fd3434981";
 const CORE = `tanwin-core-${VERSION}`;
 const AUDIO = "tanwin-audio";
 const SOUND = "tanwin-sound"; // звук этапов, скачанный заранее (js/sound.js): сам не удаляется
@@ -208,6 +208,7 @@ const FILES = [
   "js/posthog-loader.js",
   "js/prefer.js",
   "js/rules.js",
+  "js/share.js",
   "js/sound.js",
   "js/speech.js",
   "js/store.js",
